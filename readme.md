@@ -1,0 +1,1 @@
+The heterogeneity of symptoms among individuals diagnosed with the same mental disorder impedes the identification of biomarkers and the development of targeted treatments.
