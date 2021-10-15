@@ -48,7 +48,7 @@ if(!require("psych")) install.packages("psych")
 ###### 2. Import and prepare data ############################################
 #### Import
 # PATH
-df <- read.csv('pnass01.csv')
+df <- read.csv('~/countSymptomsPTSD/pnass01.csv')
 #### Prepare dataset
 # Descriptives
 df$Age <- as.numeric(df$interview_age) / 10 # change age variable accordingly
