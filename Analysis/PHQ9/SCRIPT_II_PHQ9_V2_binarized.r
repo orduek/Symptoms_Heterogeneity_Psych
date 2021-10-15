@@ -134,6 +134,10 @@ m_pl$pars # 2.13
 bs_p = bootstrap_p(m_pl, no_of_sims = 1000, threads = 5, seed = 241)
 bs_p$p # 0.255
 
+# SD 
+sd(bs_p$bootstraps$xmin)
+sd(bs_p$bootstraps$pars)
+
 pdf("PL_parameters_boot_PHQ9_binarized.pdf", width=8, height=8)
 plot(bs_p)
 dev.off() 
@@ -154,9 +158,9 @@ lines(m_ln_EQ, col = 4,lty = 2, lwd = 2)
 dev.off()
 
 # Formally assess
-compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.79 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.39 -> m_ln_EQ  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.604 -> m_pl better fit
+compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
 
 
 ######  6. Export data for Figures ##############################################
