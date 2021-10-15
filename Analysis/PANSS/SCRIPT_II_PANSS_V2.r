@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 2.0 (01.06.2021)                        #
+#                       Code Version 2.1 (15.10.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -35,12 +35,12 @@
 
 ###### 1. Load Libraries #####################################################
 # Data handling + basic calculations
-if(!require("tidyverse")) install.packages("tidyverse")
-if(!require("foreign")) install.packages("foreign")
-if(!require("ReIns")) install.packages("ReIns")
+library("tidyverse")
+library("foreign")
+library("ReIns")
 
 #Power Law
-if(!require("poweRlaw")) install.packages("poweRlaw")
+library("poweRlaw")
 
 
 ###### 2. Import and prepare data ############################################
@@ -143,6 +143,10 @@ m_pl$pars # 2.07
 bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
 bs_p$p # 0.222
 
+# SD 
+sd(bs_p$bootstraps$xmin)
+sd(bs_p$bootstraps$pars)
+
 pdf("PL_parameters_boot_PANSS.pdf", width=8, height=8)
 plot(bs_p)
 dev.off() 
@@ -163,9 +167,9 @@ lines(m_ln_EQ, col = 4,lty = 2, lwd = 2)
 dev.off()
 
 # Formally assess
-compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.752 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.376 -> m_ln_EQ  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.62 -> m_pl better fit
+compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
 
 
 ######  6. Export data for Figures ##############################################

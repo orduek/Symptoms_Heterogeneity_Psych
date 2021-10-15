@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 2.0 (01.06.2021)                        #
+#                       Code Version 2.2 (15.10.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -36,24 +36,24 @@
 
 ###### 1. Load Libraries #####################################################
 # Data handling + basic calculations
-if(!require("tidyverse")) install.packages("tidyverse")
-if(!require("foreign")) install.packages("foreign")
-if(!require("ReIns")) install.packages("ReIns")
+library("tidyverse")
+library("foreign")
+library("ReIns")
 
 #Power Law
-if(!require("poweRlaw")) install.packages("poweRlaw")
+library("poweRlaw")
 
 
 ###### 2. Import and prepare data ############################################
 ## Prepare
 # Load datax & data2 created in script one
-data1_binarized<- read_delim("Generated_Data/DASS_binarized.csv", 
+data1_binarized<- read_delim("~/Desktop/Symptom_count/Analyses/Latest/Symptom_count_DASS/Generated_Data/DASS_binarized.csv", 
                              ";", escape_double = FALSE, trim_ws = TRUE)
 
-data2_counted<- read_delim("Generated_Data/DASS_freq_count.csv", 
+data2_counted<- read_delim("~/Desktop/Symptom_count/Analyses/Latest/Symptom_count_DASS/Generated_Data/DASS_freq_count.csv", 
                            ";", escape_double = FALSE, trim_ws = TRUE)
 
-datax<- read_delim("Generated_Data/DASS_Matched_freq_count.csv", 
+datax<- read_delim("~/Desktop/Symptom_count/Analyses/Latest/Symptom_count_DASS/Generated_Data/DASS_Matched_freq_count.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
 ###### 3. Descriptive #######################################################
@@ -86,7 +86,7 @@ print(data2_counted[1,]) #
 print(data2_counted[2,]) # 
 print(data2_counted[3,]) # 
 
-## Median endorsement of phenotypes   ?!?!?!?!?!?!?!?!?
+## Median endorsement of phenotypes  
 summary(datax$freq) # median 49
 hist(datax$freq) # plot
 
@@ -145,8 +145,12 @@ m_pl$pars # alpha
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-# bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
 bs_p$p
+
+# SD 
+sd(bs_p$bootstraps$xmin)
+sd(bs_p$bootstraps$pars)
 
 pdf("Images/PL_parameters_boot_DASS.pdf", width=8, height=8)
 plot(bs_p)
@@ -169,8 +173,8 @@ dev.off()
 
 # Formally assess
 compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_ln_EQ  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_pl better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
 
 ######  6. Export data for Figures ##############################################
 ### Figure 1a
@@ -190,7 +194,30 @@ save(line_ln_DASS, file = "Generated Data/line_ln_DASS.RData")
 ######  7. Session info #########################################################
 sessionInfo()
 
-
-
+# R version 4.0.2 (2020-06-22)
+# Platform: x86_64-apple-darwin17.0 (64-bit)
+# Running under: OS X Snow Leopard 11.6
+# 
+# Matrix products: default
+# LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
+# 
+# locale:
+# [1] de_CH.UTF-8/de_CH.UTF-8/de_CH.UTF-8/C/de_CH.UTF-8/de_CH.UTF-8
+# 
+# attached base packages:
+#  [1] stats     graphics  grDevices utils     datasets  methods   base     
+# 
+# other attached packages:
+# [1] poweRlaw_0.70.6 psych_2.1.6     ReIns_1.0.10    foreign_0.8-81  readxl_1.3.1    forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7     purrr_0.3.4     readr_2.0.1     tidyr_1.1.3    
+# [12] tibble_3.1.4    ggplot2_3.3.5   tidyverse_1.3.1
+# 
+# loaded via a namespace (and not attached):
+# [1] Rcpp_1.0.7        lubridate_1.7.10  lattice_0.20-44   packrat_0.7.0     digest_0.6.27     foreach_1.5.1     assertthat_0.2.1  utf8_1.2.2        R6_2.5.1          cellranger_1.1.0 
+# [11] plyr_1.8.6        backports_1.2.1   reprex_2.0.1      pracma_2.3.3      httr_1.4.2        pillar_1.6.2      rlang_0.4.11      rstudioapi_0.13   Matrix_1.3-4      splines_4.0.2    
+# [21] bit_4.0.4         munsell_0.5.0     broom_0.7.9       compiler_4.0.2    modelr_0.1.8      pkgconfig_2.0.3   mnormt_2.0.2      tmvnsim_1.0-2     tidyselect_1.1.1  codetools_0.2-18 
+# [31] fansi_0.5.0       crayon_1.4.1      tzdb_0.1.2        dbplyr_2.1.1      withr_2.4.2       grid_4.0.2        nlme_3.1-152      jsonlite_1.7.2    gtable_0.3.0      lifecycle_1.0.0  
+# [41] DBI_1.1.1         magrittr_2.0.1    scales_1.1.1      vroom_1.5.4       cli_3.0.1         stringi_1.7.4     farver_2.1.0      fs_1.5.0          doParallel_1.0.16 xml2_1.3.2       
+# [51] ellipsis_0.3.2    generics_0.1.0    vctrs_0.3.8       iterators_1.0.13  tools_4.0.2       bit64_4.0.5       glue_1.4.2        hms_1.1.0         parallel_4.0.2    survival_3.2-13  
+# [61] colorspace_2.0-2  rvest_1.0.1       haven_2.4.3
 
 #####################################  END  ####################################

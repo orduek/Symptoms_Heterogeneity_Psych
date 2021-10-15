@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 2.0 (01.06.2021)                        #
+#                       Code Version 2.1 (15.10.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -48,15 +48,15 @@
 
 ###### 1. Load Libraries #####################################################
 # Data handling + basic calculations
-if(!require("tidyverse")) install.packages("tidyverse")
-if(!require("foreign")) install.packages("foreign")
-if(!require("ReIns")) install.packages("ReIns")
+library("tidyverse")
+library("foreign")
+library("ReIns")
 
 #Power Law
-if(!require("poweRlaw")) install.packages("poweRlaw")
+library("poweRlaw")
 
 # Add theme_minimal_hgrid
-if(!require("cowplot")) install.packages("cowplot")
+library("cowplot")
 
 
 ###### 2. Import and prepare data ############################################
@@ -242,6 +242,10 @@ m_pl$pars # 2.62
 bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
 bs_p$p # 0.2776
 
+# SD 
+sd(bs_p$bootstraps$xmin)
+sd(bs_p$bootstraps$pars)
+
 pdf("Images/LOW_PL_parameters_boot_PHQ9_Binarized.pdf", width=8, height=8)
 plot(bs_p)
 dev.off() 
@@ -262,9 +266,9 @@ lines(m_ln_EQ, col = 4,lty = 2, lwd = 2)
 dev.off()
 
 # Formally assess
-compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.79 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.39 -> m_ln_EQ  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.60 -> m_pl better fit
+compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
 
 ######  6.2 Medium ##############################################################
 #### Prepare
@@ -282,6 +286,10 @@ m_pl$pars # 2.04
 ## Test whether power law is possible
 bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
 bs_p$p # 0.026 - so, not conforming with powerlaw
+
+# SD 
+sd(bs_p$bootstraps$xmin)
+sd(bs_p$bootstraps$pars)
 
 pdf("Images/MED_PL_parameters_boot_PHQ9Binarized.pdf", width=8, height=8)
 plot(bs_p)
@@ -304,8 +312,8 @@ dev.off()
 
 # Formally assess
 compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.97 -> m_ln_EQ  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.02 -> m_pl better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
 
 ######  6.3 High ##############################################################
 #### Prepare
@@ -323,6 +331,10 @@ m_pl$pars # 1.77
 ## Test whether power law is possible
 bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
 bs_p$p # 0.242
+
+# SD 
+sd(bs_p$bootstraps$xmin)
+sd(bs_p$bootstraps$pars)
 
 pdf("Images/HIGH_PL_parameters_boot_PHQ9Binarized.pdf", width=8, height=8)
 plot(bs_p)
@@ -344,9 +356,9 @@ lines(m_ln_EQ, col = 4,lty = 2, lwd = 2)
 dev.off()
 
 # Formally assess
-compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.25 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.873 -> m_ln_EQ  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.12 -> m_pl better fit
+compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
 
 
 ######  7. Session info #########################################################
