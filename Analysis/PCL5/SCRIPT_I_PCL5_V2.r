@@ -39,11 +39,11 @@
 
 ###### 1. Load Libraries #####################################################
 # Data handling + basic calculations
-if(!require("tidyverse")) install.packages("tidyverse")
-if(!require("readxl")) install.packages("readxl")
-if(!require("foreign")) install.packages("foreign")
-if(!require("ReIns")) install.packages("ReIns")
-if(!require("psych")) install.packages("psych")
+library("tidyverse")
+library("readxl")
+library("foreign")
+library("ReIns")
+library("psych")
 
 ###### 2. Import and prepare data ############################################
 #### Import
