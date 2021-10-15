@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 2.0 (01.06.2021)                        #
+#                       Code Version 2.1 (15.10.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -36,12 +36,12 @@
 
 ###### 1. Load Libraries #####################################################
 # Data handling + basic calculations
-if(!require("tidyverse")) install.packages("tidyverse")
-if(!require("foreign")) install.packages("foreign")
-if(!require("ReIns")) install.packages("ReIns")
+library("tidyverse")
+library("foreign")
+library("ReIns")
 
 #Power Law
-if(!require("poweRlaw")) install.packages("poweRlaw")
+library("poweRlaw")
 
 
 ###### 2. Import and prepare data ############################################
