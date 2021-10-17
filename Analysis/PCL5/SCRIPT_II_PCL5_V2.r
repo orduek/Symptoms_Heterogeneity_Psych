@@ -55,6 +55,7 @@ data2_counted<- read_delim("Analysis/PCL5/Generated_Data/freq_count.csv",
 datax<- read_delim("Analysis/PCL5/Generated_Data/Matched_freq_count.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
+
 ###### 3. Descriptive #######################################################
 ## Datax
 summary(datax)
@@ -141,12 +142,12 @@ m_pl$pars # 1.86
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
-bs_p$p #0.865
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 11, seed = 241)
+bs_p$p #0.857
 
 # SD 
-sd(bs_p$bootstraps$xmin)
-sd(bs_p$bootstraps$pars)
+sd(bs_p$bootstraps$xmin) # 3.45
+sd(bs_p$bootstraps$pars) # 0.08
 
 pdf("Images/PL_parameters_boot_PCL5.pdf", width=8, height=8)
 plot(bs_p)

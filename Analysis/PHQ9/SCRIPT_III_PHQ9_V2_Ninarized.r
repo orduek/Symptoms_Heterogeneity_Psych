@@ -239,12 +239,12 @@ m_pl$pars # 2.62
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 12, seed = 241)
 bs_p$p # 0.2776
 
 # SD 
-sd(bs_p$bootstraps$xmin)
-sd(bs_p$bootstraps$pars)
+sd(bs_p$bootstraps$xmin) # 40.02
+sd(bs_p$bootstraps$pars) # 0.68
 
 pdf("Images/LOW_PL_parameters_boot_PHQ9_Binarized.pdf", width=8, height=8)
 plot(bs_p)
@@ -266,9 +266,9 @@ lines(m_ln_EQ, col = 4,lty = 2, lwd = 2)
 dev.off()
 
 # Formally assess
-compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
+compare_distributions(m_pl, m_ln_EQ)$p_two_sided #0.799 p < 0.05 -> one of the two has better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided #0.399   p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #0.600   p < 0.05 -> m_ln_EQ better fit
 
 ######  6.2 Medium ##############################################################
 #### Prepare
@@ -284,12 +284,12 @@ m_pl$pars # 2.04
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
-bs_p$p # 0.026 - so, not conforming with powerlaw
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 12, seed = 241)
+bs_p$p # 0.028 - so, not conforming with powerlaw
 
 # SD 
-sd(bs_p$bootstraps$xmin)
-sd(bs_p$bootstraps$pars)
+sd(bs_p$bootstraps$xmin) #8.57
+sd(bs_p$bootstraps$pars) # 0.14
 
 pdf("Images/MED_PL_parameters_boot_PHQ9Binarized.pdf", width=8, height=8)
 plot(bs_p)
@@ -311,9 +311,9 @@ lines(m_ln_EQ, col = 4,lty = 2, lwd = 2)
 dev.off()
 
 # Formally assess
-compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
+compare_distributions(m_pl, m_ln_EQ)$p_two_sided # 0.056 #p < 0.05 -> one of the two has better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided # 0.971 p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #  0.028 p < 0.05 -> m_ln_EQ better fit
 
 ######  6.3 High ##############################################################
 #### Prepare
@@ -329,12 +329,12 @@ m_pl$pars # 1.77
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
-bs_p$p # 0.242
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 12, seed = 241)
+bs_p$p # 0.244
 
 # SD 
-sd(bs_p$bootstraps$xmin)
-sd(bs_p$bootstraps$pars)
+sd(bs_p$bootstraps$xmin) # 10.51
+sd(bs_p$bootstraps$pars) # 0.14
 
 pdf("Images/HIGH_PL_parameters_boot_PHQ9Binarized.pdf", width=8, height=8)
 plot(bs_p)
@@ -356,9 +356,9 @@ lines(m_ln_EQ, col = 4,lty = 2, lwd = 2)
 dev.off()
 
 # Formally assess
-compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
+compare_distributions(m_pl, m_ln_EQ)$p_two_sided # 0.252 p < 0.05 -> one of the two has better fit
+compare_distributions(m_pl, m_ln_EQ)$p_one_sided # 0.873  p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_pl)$p_one_sided #  0.12 p < 0.05 -> m_ln_EQ better fit
 
 
 ######  7. Session info #########################################################

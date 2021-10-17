@@ -55,6 +55,19 @@ data2_counted<- read_delim("Analysis/PHQ9/Generated Data/freq_count_nonB.csv",
 datax<- read_delim("Analysis/PHQ9/Generated Data/Matched_freq_count_nonB.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
+
+###
+
+
+data1_Nonbinarized<- read_delim("~/countSymptomsPTSD/Analysis/PHQ9/Generated Data/nonbinarized.csv", 
+                                ";", escape_double = FALSE, trim_ws = TRUE)
+
+data2_counted<- read_delim("~/countSymptomsPTSD/Analysis/PHQ9/Generated Data/freq_count_nonB.csv", 
+                           ";", escape_double = FALSE, trim_ws = TRUE)
+
+datax<- read_delim("~/countSymptomsPTSD/Analysis/PHQ9/Generated Data/Matched_freq_count_nonB.csv", 
+                   ";", escape_double = FALSE, trim_ws = TRUE)
+
 ###### 3. Descriptive #######################################################
 ## Datax
 summary(datax)
@@ -131,12 +144,12 @@ m_pl$pars # 2.43
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 1000, threads = 5, seed = 241)
-bs_p$p
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 12, seed = 241)
+bs_p$p # 0.24
 
 # SD 
-sd(bs_p$bootstraps$xmin)
-sd(bs_p$bootstraps$pars)
+sd(bs_p$bootstraps$xmin) # 4.53
+sd(bs_p$bootstraps$pars) # 0.05
 
 pdf("PL_parameters_boot_PHQ9.pdf", width=8, height=8)
 plot(bs_p)

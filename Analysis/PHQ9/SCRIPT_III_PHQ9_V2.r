@@ -62,7 +62,7 @@ library("cowplot")
 ###### 2. Import and prepare data ############################################
 ## Prepare
 # Load datax & data2 created in script one
-datax <- read_delim("Analysis/PHQ9/Generated Data/Matched_freq_count.csv", 
+datax <- read_delim("~/countSymptomsPTSD/Analysis/PHQ9/Generated Data/Matched_freq_count.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
 ###### 3. Descriptive #######################################################
@@ -88,7 +88,7 @@ data_sub_low <- datax %>%  #Q1
 
 # Create new data frame
 data2_low <- data_sub_low %>% 
-  select(Q1:Q9) %>% 
+  select(q1:q9) %>% 
   
   tibble()
 
@@ -101,7 +101,7 @@ data_sub_med <- datax %>%  #Median
 
 # Create new data frame
 data2_med <- data_sub_med %>% 
-  select(Q1:Q9) %>% 
+  select(q1:q9) %>% 
   tibble()
 
 ## Count frequency of profiles
@@ -113,7 +113,7 @@ data_sub_high <- datax %>%  #Median
 
 # Create new data frame
 data2_high <- data_sub_high %>% 
-  select(Q1:Q9) %>% 
+  select(q1:q9) %>% 
   tibble()
 
 ## Count frequency of profiles
@@ -234,12 +234,12 @@ est_pl = estimate_xmin(m_pl)
 m_pl$setXmin(est_pl)
 
 # Estimated Parameters
-m_pl$xmin # 7
-m_pl$pars # 2.37
+m_pl$xmin # 105
+m_pl$pars # 2.62
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 12, seed = 241)
 bs_p$p # 0.801
 
 # SD 
