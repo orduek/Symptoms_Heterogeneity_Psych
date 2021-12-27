@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.0 (06.07.2021)                        #
+#                       Code Version 4.0 (27.12.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -107,7 +107,7 @@ q3 <- ggplot(freq1_top_DASS, aes(x=as.factor(1:nrow(freq1_top_DASS)),y=freq)) +
   ggtitle("3. DASS")+
   theme_minimal() + 
   Theme_Figure_1a
-  
+
 
 ##MBI
 q4 <- ggplot(freq1_top_MBI, aes(x=as.factor(1:nrow(freq1_top_MBI)),y=freq)) +
@@ -135,29 +135,34 @@ q5 <- ggplot(freq1_top_PHQ, aes(x=as.factor(1:nrow(freq1_top_MBI)),y=freq)) +
 #### Import  #### 
 
 ## PANSS
-load("Analysis/PANSS/Generated Data/res_pl_PANSS.RData") #ADJUST!!!
-load("Analysis/PANSS/Generated Data/line_pl_PANSS.RData")#ADJUST!!!
-load("Analysis/PANSS/Generated Data/line_ln_PANSS.RData")#ADJUST!!!
+load("Analysis/PANSS/Generated Data/res_pl_PANSS.RData") 
+load("Analysis/PANSS/Generated Data/line_pl_PANSS.RData")
+load("Analysis/PANSS/Generated Data/line_ln_PANSS.RData")
+load("Analysis/PANSS/Generated Data/line_ex_PANSS.RData")
 
 ## PCL
-load("Analysis/PCL5/Generated_Data/res_pl_PCL.RData")#ADJUST!!!
-load("Analysis/PCL5/Generated_Data/line_pl_PCL.RData")#ADJUST!!!
-load("Analysis/PCL5/Generated_Data/line_ln_PCL.RData")#ADJUST!!!
+load("Analysis/PCL5/Generated_Data/res_pl_PCL.RData")
+load("Analysis/PCL5/Generated_Data/line_pl_PCL.RData")
+load("Analysis/PCL5/Generated_Data/line_ln_PCL.RData")
+load("Analysis/PCL5/Generated_Data/line_ex_PCL.RData")
 
 ## DASS
 load("raw_data/res_pl_DASS.RData")
 load("raw_data/line_pl_DASS.RData")
 load("raw_data/line_ln_DASS.RData")
+load("raw_data/line_ex_DASS.RData")
 
 ## MBI
 load("raw_data/res_pl_MBI.RData")
 load("raw_data/line_pl_MBI.RData")
 load("raw_data/line_ln_MBI.RData")
+load("raw_data/line_ex_MBI.RData")
 
 ## PHQ-9#
-load("Analysis/PHQ9/Generated Data/res_pl_PHQ9B.RData")#ADJUST!!!
-load("Analysis/PHQ9/Generated Data/line_pl_PHQ9B.RData")#ADJUST!!!
-load("Analysis/PHQ9/Generated Data/line_ln_PHQ9B.RData")#ADJUST!!!
+load("Analysis/PHQ9/Generated Data/res_pl_PHQ9B.RData")
+load("Analysis/PHQ9/Generated Data/line_pl_PHQ9B.RData")
+load("Analysis/PHQ9/Generated Data/line_ln_PHQ9B.RData")
+load("Analysis/PHQ9/Generated Data/line_ex_PHQ9B.RData")
 
 #### Individual Figures #### 
 Theme_Figure_1b <- theme(
@@ -184,8 +189,9 @@ p1 <- ggplot(res_pl_PANSS, aes(x=x,y=y)) +
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
                 limits = c(1, 10^3)) + 
-  geom_line(data = line_pl_PANSS, aes(x=x, y=y), color = "red", size = 0.4) +         #ADJUST!!!
-  geom_line(data = line_ln_PANSS, aes(x=x, y=y), color = "blue", size = 0.4,linetype = "dashed")+ #ADJUST!!!
+  geom_line(data = line_pl_PANSS, aes(x=x, y=y), color = "red", size = 1) +         
+  geom_line(data = line_ln_PANSS, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
+  geom_line(data = line_ex_PANSS, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
   xlab("") + 
   ylab("") +
   ggtitle("")+
@@ -203,8 +209,9 @@ p2 <- ggplot(res_pl_PCL, aes(x=x,y=y)) +
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
                 limits = c(1, 10^5)) + 
-  geom_line(data = line_pl_PCL, aes(x=x, y=y), color = "red", size = 0.4) + #ADJUST!!!
-  geom_line(data = line_ln_PCL, aes(x=x, y=y), color = "blue", size = 0.4,linetype = "dashed")+ #ADJUST!!!
+  geom_line(data = line_pl_PCL, aes(x=x, y=y), color = "red", size = 1) +        
+  geom_line(data = line_ln_PCL, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
+  geom_line(data = line_ex_PCL, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
   ggtitle("")+
   xlab("") + 
   ylab("") +
@@ -224,8 +231,9 @@ p3 <- ggplot(res_pl_DASS, aes(x=x,y=y)) +
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
                 limits = c(1, 10^4)) + 
-  geom_line(data = line_pl_DASS, aes(x=x, y=y), color = "red", size = 0.4) +
-  geom_line(data = line_ln_DASS, aes(x=x, y=y), color = "blue", size = 0.4,linetype = "dashed")+
+  geom_line(data = line_pl_DASS, aes(x=x, y=y), color = "red", size = 1) +         
+  geom_line(data = line_ln_DASS, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
+  geom_line(data = line_ex_DASS, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
   xlab("") + 
   ylab("CDF") +
   ggtitle("")+
@@ -243,8 +251,9 @@ p4 <- ggplot(res_pl_MBI, aes(x=x,y=y)) +
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
                 limits = c(1, 10^4)) + 
-  geom_line(data = line_pl_MBI, aes(x=x, y=y), color = "red", size = 0.4) +
-  geom_line(data = line_ln_MBI, aes(x=x, y=y), color = "blue", size = 0.4,linetype = "dashed")+
+  geom_line(data = line_pl_MBI, aes(x=x, y=y), color = "red", size = 1) +         
+  geom_line(data = line_ln_MBI, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
+  geom_line(data = line_ex_MBI, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
   xlab("") + 
   ylab("") +
   ggtitle("")+
@@ -262,8 +271,9 @@ p5 <- ggplot(res_pl_PHQ, aes(x=x,y=y)) +
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
                 limits = c(1, 10^4)) + 
-  geom_line(data = line_pl_PHQ, aes(x=x, y=y), color = "red", size = 0.4) +   #ADJUST!!!
-  geom_line(data = line_ln_PHQ, aes(x=x, y=y), color = "blue", size = 0.4,linetype = "dashed")+ #ADJUST!!!
+  geom_line(data = line_pl_PHQ, aes(x=x, y=y), color = "red", size = 1) +        
+  geom_line(data = line_ln_PHQ, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
+  geom_line(data = line_ex_PHQ, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
   xlab("Frequency") + 
   ylab("") +
   ggtitle("")+
@@ -273,7 +283,7 @@ p5 <- ggplot(res_pl_PHQ, aes(x=x,y=y)) +
 
 ###### 4. FIGURE 1 FULL #########################################################
 
-pdf("Figure_1.pdf", width=7.25, height=7.25) #Width given by Science requirements
+pdf("Figure_1.pdf", width=7.25, height=7.25) 
 cowplot::plot_grid(
   q1, p1, q2, p2, q3, p3, q4, p4, q5, p5,
   labels=c("A", "B"),rel_widths = c(1, 2), 
