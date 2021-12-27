@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 2.1 (15.10.2021)                        #
+#                       Code Version 2.4 (27.12.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -158,19 +158,28 @@ m_ln_EQ$setXmin(m_pl$getXmin())
 est_m_ln_EQ = estimate_pars(m_ln_EQ)
 m_ln_EQ$setPars(est_m_ln_EQ)
 
+## Exponential with Xmin of PL
+m_ex_EQ = disexp$new(Distribution) 
+m_ex_EQ$setXmin(m_pl$getXmin())
+est_m_ex_EQ = estimate_pars(m_ex_EQ)
+m_ex_EQ$setPars(est_m_ex_EQ)
+
 # Plot different distributions
 options(scipen=5)
-pdf("PL_ML_CDF_equal_Xmin_PANSS.pdf", width=8, height=8)
+pdf("Images/PL_ML_CDF_equal_Xmin.pdf", width=8, height=8)
 plot(m_pl, xlab = "", ylab="CDF",panel.first = grid(col = "grey80"))
-lines(m_pl, col = 2,lty = 1, lwd = 2) 
-lines(m_ln_EQ, col = 4,lty = 2, lwd = 2) 
+lines(m_pl, col = "red",lty = 1, lwd = 2) 
+lines(m_ln_EQ, col = "blue", lty = 2, lwd = 2) 
+lines(m_ex_EQ, col = "orange",lty = 3, lwd = 2) 
 dev.off()
 
 # Formally assess
 compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
-compare_distributions(m_pl, m_ln_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
-compare_distributions(m_ln_EQ, m_pl)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
+compare_distributions(m_pl, m_ex_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
+compare_distributions(m_ex_EQ, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
 
+compare_distributions(m_pl, m_ex_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
 
 ######  6. Export data for Figures ##############################################
 ### Figure 1a
@@ -182,10 +191,12 @@ save(freq1_top_PANSS , file = "Analysis/PANSS/Generated Data/freq1_top_PANSS.RDa
 res_pl_PANSS <- plot(m_pl)
 line_pl_PANSS <- lines(m_pl)
 line_ln_PANSS <- lines(m_ln_EQ)
+line_ex_PANSS <- lines(m_ex_EQ)
 
 save(res_pl_PANSS, file = "Analysis/PANSS/Generated Data/res_pl_PANSS.RData")
 save(line_pl_PANSS, file = "Analysis/PANSS/Generated Data/line_pl_PANSS.RData")
 save(line_ln_PANSS, file = "Analysis/PANSS/Generated Data/line_ln_PANSS.RData")
+save(line_ex_PANSS, file = "Analysis/PANSS/Generated Data/line_ex_PANSS.RData")
 
 ######  7. Session info #########################################################
 sessionInfo()
