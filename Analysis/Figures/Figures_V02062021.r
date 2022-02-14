@@ -180,7 +180,6 @@ Theme_Figure_1b <- theme(
 
 ## PANSS
 p1 <- ggplot(res_pl_PANSS, aes(x=x,y=y)) +
-  geom_point(size = 1)+
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
@@ -192,6 +191,7 @@ p1 <- ggplot(res_pl_PANSS, aes(x=x,y=y)) +
   geom_line(data = line_pl_PANSS, aes(x=x, y=y), color = "red", size = 1) +         
   geom_line(data = line_ln_PANSS, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
   geom_line(data = line_ex_PANSS, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
+  geom_point(size = 1)+
   xlab("") + 
   ylab("") +
   ggtitle("")+
@@ -200,7 +200,6 @@ p1 <- ggplot(res_pl_PANSS, aes(x=x,y=y)) +
 
 ## PCL
 p2 <- ggplot(res_pl_PCL, aes(x=x,y=y)) +
-  geom_point(size = 1)+
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
@@ -211,7 +210,8 @@ p2 <- ggplot(res_pl_PCL, aes(x=x,y=y)) +
                 limits = c(1, 10^5)) + 
   geom_line(data = line_pl_PCL, aes(x=x, y=y), color = "red", size = 1) +        
   geom_line(data = line_ln_PCL, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
-  geom_line(data = line_ex_PCL, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
+  geom_line(data = line_ex_PCL, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+
+  geom_point(size = 1)+
   ggtitle("")+
   xlab("") + 
   ylab("") +
@@ -222,7 +222,6 @@ p2 <- ggplot(res_pl_PCL, aes(x=x,y=y)) +
 
 ## DASS
 p3 <- ggplot(res_pl_DASS, aes(x=x,y=y)) +
-  geom_point(size = 1)+
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
@@ -234,6 +233,7 @@ p3 <- ggplot(res_pl_DASS, aes(x=x,y=y)) +
   geom_line(data = line_pl_DASS, aes(x=x, y=y), color = "red", size = 1) +         
   geom_line(data = line_ln_DASS, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
   geom_line(data = line_ex_DASS, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
+  geom_point(size = 1)+
   xlab("") + 
   ylab("CDF") +
   ggtitle("")+
@@ -242,7 +242,6 @@ p3 <- ggplot(res_pl_DASS, aes(x=x,y=y)) +
 
 ## MBI
 p4 <- ggplot(res_pl_MBI, aes(x=x,y=y)) +
-  geom_point(size = 1)+
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
@@ -253,7 +252,8 @@ p4 <- ggplot(res_pl_MBI, aes(x=x,y=y)) +
                 limits = c(1, 10^4)) + 
   geom_line(data = line_pl_MBI, aes(x=x, y=y), color = "red", size = 1) +         
   geom_line(data = line_ln_MBI, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
-  geom_line(data = line_ex_MBI, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
+  geom_line(data = line_ex_MBI, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+
+  geom_point(size = 1)+
   xlab("") + 
   ylab("") +
   ggtitle("")+
@@ -262,7 +262,6 @@ p4 <- ggplot(res_pl_MBI, aes(x=x,y=y)) +
 
 ## PHQ
 p5 <- ggplot(res_pl_PHQ, aes(x=x,y=y)) +
-  geom_point(size = 1)+
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
@@ -273,7 +272,8 @@ p5 <- ggplot(res_pl_PHQ, aes(x=x,y=y)) +
                 limits = c(1, 10^4)) + 
   geom_line(data = line_pl_PHQ, aes(x=x, y=y), color = "red", size = 1) +        
   geom_line(data = line_ln_PHQ, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
-  geom_line(data = line_ex_PHQ, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
+  geom_line(data = line_ex_PHQ, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+
+  geom_point(size = 1)+
   xlab("Frequency") + 
   ylab("") +
   ggtitle("")+

@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 2.4 (27.12.2021)                        #
+#                       Code Version 3.0 (08.02.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -89,22 +89,6 @@ print(data2_counted[3,]) # zero expect q3 (positive)
 summary(datax$freq) # median = 16, q1-q3 = 3-239
 hist(datax$freq) # plot
 
-######  4.2 Jaccard-Index  ###################################################
-data_jacc_dist <- dist(data1_binarized, method = "binary")
-data_jacc_index <- 1-data_jacc_dist
-
-summary(data_jacc_index) # median = 0.789, q1-q3 [0.72, 0.869]
-hist(data_jacc_index)
-
-### Jaccard truncated#####
-truncDat <- filter(datax, freq <=16) # using median frequency
-truncDat <- truncDat[,16:29] # take only the binarized questionnaires
-data_jacc_dist <- dist(truncDat, method = "binary")
-data_jacc_index <- 1-data_jacc_dist
-
-summary(data_jacc_index) # median = 0.250, q1-q3 [0.143, 0.375]
-hist(data_jacc_index)
-
 ######  4.3 Plot the phenotypes distribution #################################
 ### 4.3.1 Plot the 100 most common phenotypes
 freq1_top  <- data2_counted %>% 
@@ -134,20 +118,20 @@ m_pl = displ$new(Distribution)
 est_pl = estimate_xmin(m_pl)
 m_pl$setXmin(est_pl)
 
-# Estimated Parameters
-m_pl$xmin # 1
-m_pl$pars # 2.07
-
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
-bs_p$p # 0.222
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs_p$p 
+
+# Estimated Parameters
+m_pl$xmin # Xmin
+m_pl$pars # alpha
 
 # SD 
-sd(bs_p$bootstraps$xmin)
+sd(bs_p$bootstraps$xmin) 
 sd(bs_p$bootstraps$pars)
 
-pdf("PL_parameters_boot_PANSS.pdf", width=8, height=8)
+pdf("Images/PL_parameters_boot.pdf", width=8, height=8)
 plot(bs_p)
 dev.off() 
 
@@ -158,11 +142,35 @@ m_ln_EQ$setXmin(m_pl$getXmin())
 est_m_ln_EQ = estimate_pars(m_ln_EQ)
 m_ln_EQ$setPars(est_m_ln_EQ)
 
+## Bootstrap parameters
+bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+
+# Parameters
+m_ln_EQ$xmin
+m_ln_EQ$pars[[1]]
+m_ln_EQ$pars[[2]]
+
+# SD 
+sd(bs_ln$bootstraps$xmin) #
+sd(bs_ln$bootstraps$pars1)
+sd(bs_ln$bootstraps$pars2)
+
 ## Exponential with Xmin of PL
 m_ex_EQ = disexp$new(Distribution) 
 m_ex_EQ$setXmin(m_pl$getXmin())
 est_m_ex_EQ = estimate_pars(m_ex_EQ)
 m_ex_EQ$setPars(est_m_ex_EQ)
+
+## Bootstrap parameters
+bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+
+# Parameters
+m_ex_EQ$xmin
+m_ex_EQ$pars
+
+# SD 
+sd(bs_ex$bootstraps$xmin) #
+sd(bs_ex$bootstraps$pars)
 
 # Plot different distributions
 options(scipen=5)
