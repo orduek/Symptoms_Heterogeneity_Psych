@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 1.0 (14.02.2022)                        #
+#                     Code Version 1.0.1 (14.02.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -111,9 +111,9 @@ top_across(data_bin,
 ###### 4.3 Define conditions for the simulation ##############################
 # Define grid
 top_grid <-
-  expand.grid(n_sample = c(10^3, 10^4),
-              sample_size = c(2.5*10^2, 5*10^2, 10^3, 5*10^3),
-              top_profiles = c(10, 50))
+  expand.grid(n_sample = c(10^3),
+              sample_size = c(100, 500, 1000),
+              top_profiles = c(10, 25))
 
 # Define storage
 top_grid_res <- list() #Simulated data is stored in this list as separate data sets
@@ -188,11 +188,6 @@ low_across(data_bin,
 
 ###### 5.3 Define conditions for the simulation ##############################
 # Define grid
-low_grid <-
-  expand.grid(n_sample = c(10^3, 10^4),
-              sample_size = c(2.5*10^2, 5*10^2, 10^3, 5*10^3),
-              n_prof_freq_less = c(1, 5))
-
 low_grid <-
   expand.grid(n_sample = c(10^3),
               sample_size = c(100, 500, 1000),
