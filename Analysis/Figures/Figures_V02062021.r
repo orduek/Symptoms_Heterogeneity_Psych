@@ -43,22 +43,22 @@ freq1_top_PANSS <- freq1_top_PANSS %>%   #ADJUST!!!
   top_n(n=50)                       
 
 ## PCL
-load("Analysis/PCL5/Generated_Data/freq1_top_PCL.RData") #ADJUST!!!
+load("Analysis/PCL5/Generated Data/freq1_top_PCL.RData") #ADJUST!!!
 freq1_top_PCL <- freq1_top_PCL %>%  #ADJUST!!!
   top_n(n=50)
 
 ## DASS
-load("raw_data/freq1_top_DASS.RData")
+load("Analysis/DASS/freq1_top_DASS.RData")
 freq1_top_DASS <- freq1_top_DASS %>% 
   top_n(n=50)
 
 ## MBI
-load("raw_data/freq1_top_MBI.RData")
+load("Analysis/MBI/Generated Data/freq1_top_MBI.RData")
 freq1_top_MBI <- freq1_top_MBI %>% 
   top_n(n=50)
 
 ## PHQ
-load("Analysis/PHQ9/Generated Data/freq1_top_PHQ9_binarized.RData") #ADJUST!!!
+load("Analysis/PHQ9/Generated Data/freq1_top_PHQ9.RData") #ADJUST!!!
 freq1_top_PHQ <- freq1_top_PHQ %>%  #ADJUST!!!
   top_n(n=50)
 
@@ -141,28 +141,28 @@ load("Analysis/PANSS/Generated Data/line_ln_PANSS.RData")
 load("Analysis/PANSS/Generated Data/line_ex_PANSS.RData")
 
 ## PCL
-load("Analysis/PCL5/Generated_Data/res_pl_PCL.RData")
-load("Analysis/PCL5/Generated_Data/line_pl_PCL.RData")
-load("Analysis/PCL5/Generated_Data/line_ln_PCL.RData")
-load("Analysis/PCL5/Generated_Data/line_ex_PCL.RData")
+load("Analysis/PCL5/Generated Data/res_pl_PCL.RData")
+load("Analysis/PCL5/Generated Data/line_pl_PCL.RData")
+load("Analysis/PCL5/Generated Data/line_ln_PCL.RData")
+load("Analysis/PCL5/Generated Data/line_ex_PCL.RData")
 
 ## DASS
-load("raw_data/res_pl_DASS.RData")
-load("raw_data/line_pl_DASS.RData")
-load("raw_data/line_ln_DASS.RData")
-load("raw_data/line_ex_DASS.RData")
+load("Analysis/DASS/res_pl_DASS.RData")
+load("Analysis/DASS/line_pl_DASS.RData")
+load("Analysis/DASS/line_ln_DASS.RData")
+load("Analysis/DASS/line_ex_DASS.RData")
 
 ## MBI
-load("raw_data/res_pl_MBI.RData")
-load("raw_data/line_pl_MBI.RData")
-load("raw_data/line_ln_MBI.RData")
-load("raw_data/line_ex_MBI.RData")
+load("Analysis/MBI/Generated Data/res_pl_MBI.RData")
+load("Analysis/MBI/Generated Data/line_pl_MBI.RData")
+load("Analysis/MBI/Generated Data/line_ln_MBI.RData")
+load("Analysis/MBI/Generated Data/line_ex_MBI.RData")
 
 ## PHQ-9#
-load("Analysis/PHQ9/Generated Data/res_pl_PHQ9B.RData")
-load("Analysis/PHQ9/Generated Data/line_pl_PHQ9B.RData")
-load("Analysis/PHQ9/Generated Data/line_ln_PHQ9B.RData")
-load("Analysis/PHQ9/Generated Data/line_ex_PHQ9B.RData")
+load("Analysis/PHQ9/Generated Data/res_pl_PHQ9.RData")
+load("Analysis/PHQ9/Generated Data/line_pl_PHQ9.RData")
+load("Analysis/PHQ9/Generated Data/line_ln_PHQ9.RData")
+load("Analysis/PHQ9/Generated Data/line_ex_PHQ9.RData")
 
 #### Individual Figures #### 
 Theme_Figure_1b <- theme(

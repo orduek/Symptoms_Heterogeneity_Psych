@@ -46,13 +46,13 @@ library("poweRlaw")
 ###### 2. Import and prepare data ############################################
 ## Prepare
 # Load datax & data2 created in script one
-data1_binarized<- read_delim("Analysis/PCL5/Generated_Data/binarized.csv", 
+data1_binarized<- read_delim("Analysis/PCL5/Generated Data/binarized.csv", 
                              ";", escape_double = FALSE, trim_ws = TRUE)
 
-data2_counted<- read_delim("Analysis/PCL5/Generated_Data/freq_count.csv", 
+data2_counted<- read_delim("Analysis/PCL5/Generated Data/freq_count.csv", 
                            ";", escape_double = FALSE, trim_ws = TRUE)
 
-datax<- read_delim("Analysis/PCL5/Generated_Data/Matched_freq_count.csv", 
+datax<- read_delim("Analysis/PCL5/Generated Data/Matched_freq_count.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
 
@@ -168,7 +168,7 @@ m_ex_EQ$setPars(est_m_ex_EQ)
 
 # Plot different distributions
 options(scipen=5)
-pdf("Images/PL_ML_CDF_equal_Xmin.pdf", width=8, height=8)
+pdf("Images/PL_ML_CDF_equal_Xmin_PCL5.pdf", width=8, height=8)
 plot(m_pl, xlab = "", ylab="CDF",panel.first = grid(col = "grey80"))
 lines(m_pl, col = "red",lty = 1, lwd = 2) 
 lines(m_ln_EQ, col = "blue", lty = 2, lwd = 2) 
@@ -176,18 +176,18 @@ lines(m_ex_EQ, col = "orange",lty = 3, lwd = 2)
 dev.off()
 
 # Formally assess
-compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
-compare_distributions(m_pl, m_ex_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
-compare_distributions(m_ex_EQ, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two has better fit
+compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.95 -> one of the two has better fit
+compare_distributions(m_pl, m_ex_EQ)$p_two_sided # p < 0.12 -> one of the two has better fit
+compare_distributions(m_ex_EQ, m_ln_EQ)$p_two_sided # p < 0.12 -> one of the two has better fit
 
-compare_distributions(m_pl, m_ex_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
-compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
+compare_distributions(m_pl, m_ex_EQ)$p_one_sided #   p < 0.063 -> m_pl  better fit
+compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.063 -> m_ln_EQ better fit
 
 
 ######  6. Export data for Figures ##############################################
 ### Figure 1a
 freq1_top_PCL <- freq1_top 
-save(freq1_top_PCL , file = "Analysis/PCL5/Generated_Data/freq1_top_PCL.RData")
+save(freq1_top_PCL , file = "Analysis/PCL5/Generated Data/freq1_top_PCL.RData")
 
 ### Figure 1b
 # Export m_pl & m_ln
@@ -196,10 +196,10 @@ line_pl_PCL <- lines(m_pl)
 line_ln_PCL <- lines(m_ln_EQ)
 line_ex_PCL <- lines(m_ex_EQ)
 
-save(res_pl_PCL, file = "Analysis/PCL5/Generated_Data/res_pl_PCL.RData")
-save(line_pl_PCL, file = "Analysis/PCL5/Generated_Data/line_pl_PCL.RData")
-save(line_ln_PCL, file = "Analysis/PCL5/Generated_Data/line_ln_PCL.RData")
-save(line_ex_PCL, file = "Analysis/PCL5/Generated_Data/line_ex_PCL.RData")
+save(res_pl_PCL, file = "Analysis/PCL5/Generated Data/res_pl_PCL.RData")
+save(line_pl_PCL, file = "Analysis/PCL5/Generated Data/line_pl_PCL.RData")
+save(line_ln_PCL, file = "Analysis/PCL5/Generated Data/line_ln_PCL.RData")
+save(line_ex_PCL, file = "Analysis/PCL5/Generated Data/line_ex_PCL.RData")
 
 ######  7. Session info #########################################################
 sessionInfo()

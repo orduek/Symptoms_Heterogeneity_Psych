@@ -363,7 +363,8 @@ compare_distributions(m_ln_EQ, m_pl)$p_one_sided #  0.12 p < 0.05 -> m_ln_EQ bet
 
 ######  7. Session info #########################################################
 sessionInfo()
-
+# write session info down
+writeLines(capture.output(sessionInfo()), "sessionInfo.txt")
 
 
 
