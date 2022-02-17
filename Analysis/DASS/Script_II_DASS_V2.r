@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.0 (02.08.2021)                        #
+#                       Code Version 3.1 (17.02.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -128,9 +128,10 @@ bs_p$p
 m_pl$xmin # Xmin
 m_pl$pars # alpha
 
+bs = bootstrap(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
 # SD 
-sd(bs_p$bootstraps$xmin) 
-sd(bs_p$bootstraps$pars)
+sd(bs$bootstraps$xmin) 
+sd(bs$bootstraps$pars)
 
 pdf("Images/PL_parameters_boot.pdf", width=8, height=8)
 plot(bs_p)
