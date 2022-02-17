@@ -127,7 +127,7 @@ bs_p$p
 m_pl$xmin # Xmin
 m_pl$pars # alpha
 
-bs = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs = bootstrap(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
 
 # SD 
 sd(bs$bootstraps$xmin) 
