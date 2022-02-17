@@ -265,7 +265,7 @@ p5 <- ggplot(res_pl_PHQ, aes(x=x,y=y)) +
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
-                limits = c(10^-4, 1)) + 
+                limits = c(10^-3, 1)) + 
   scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x)),
                 expand = c(0, 0),
