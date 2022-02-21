@@ -165,6 +165,10 @@ load("Analysis/PHQ9/Generated Data/line_ln_PHQ9.RData")
 load("Analysis/PHQ9/Generated Data/line_ex_PHQ9.RData")
 
 #### Individual Figures #### 
+
+# define transperancy of points
+alpha = .4
+
 Theme_Figure_1b <- theme(
   plot.title = element_text(size=11),
   axis.title.x = element_text(size=9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
@@ -191,7 +195,7 @@ p1 <- ggplot(res_pl_PANSS, aes(x=x,y=y)) +
   geom_line(data = line_pl_PANSS, aes(x=x, y=y), color = "red", size = 1) +         
   geom_line(data = line_ln_PANSS, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
   geom_line(data = line_ex_PANSS, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
-  geom_point(size = 1)+
+  geom_point(size = 1, alpha=alpha)+
   xlab("") + 
   ylab("") +
   ggtitle("")+
@@ -211,7 +215,7 @@ p2 <- ggplot(res_pl_PCL, aes(x=x,y=y)) +
   geom_line(data = line_pl_PCL, aes(x=x, y=y), color = "red", size = 1) +        
   geom_line(data = line_ln_PCL, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
   geom_line(data = line_ex_PCL, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+
-  geom_point(size = 1)+
+  geom_point(size = 1, alpha=alpha)+
   ggtitle("")+
   xlab("") + 
   ylab("") +
@@ -233,7 +237,7 @@ p3 <- ggplot(res_pl_DASS, aes(x=x,y=y)) +
   geom_line(data = line_pl_DASS, aes(x=x, y=y), color = "red", size = 1) +         
   geom_line(data = line_ln_DASS, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
   geom_line(data = line_ex_DASS, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+ 
-  geom_point(size = 1)+
+  geom_point(size = 1, alpha=alpha)+
   xlab("") + 
   ylab("CDF") +
   ggtitle("")+
@@ -253,7 +257,7 @@ p4 <- ggplot(res_pl_MBI, aes(x=x,y=y)) +
   geom_line(data = line_pl_MBI, aes(x=x, y=y), color = "red", size = 1) +         
   geom_line(data = line_ln_MBI, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
   geom_line(data = line_ex_MBI, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+
-  geom_point(size = 1)+
+  geom_point(size = 1, alpha=alpha)+
   xlab("") + 
   ylab("") +
   ggtitle("")+
@@ -273,7 +277,7 @@ p5 <- ggplot(res_pl_PHQ, aes(x=x,y=y)) +
   geom_line(data = line_pl_PHQ, aes(x=x, y=y), color = "red", size = 1) +        
   geom_line(data = line_ln_PHQ, aes(x=x, y=y), color = "blue", size = 1,linetype = "dashed")+ 
   geom_line(data = line_ex_PHQ, aes(x=x, y=y), color = "orange", size = 1,linetype = "twodash")+
-  geom_point(size = 1)+
+  geom_point(size = 1, alpha=alpha)+
   xlab("Frequency") + 
   ylab("") +
   ggtitle("")+

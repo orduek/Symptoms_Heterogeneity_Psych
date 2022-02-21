@@ -48,7 +48,8 @@ library("psych")
 ###### 2. Import and prepare data ############################################
 #### Import
 #### Import
-data <- read_delim("Raw Data/DASS_data_21.02.19/data.csv", escape_double = FALSE, trim_ws = TRUE)
+#data <- read_delim("Raw Data/DASS_data_21.02.19/data.csv", escape_double = FALSE, trim_ws = TRUE)
+data <- read_delim("~/Desktop/data.csv", escape_double = FALSE, trim_ws = TRUE, delim = '\t')
 
 ###### 2.1 Select variables for methods and materials // DATA0
 data0 <- data %>% 
@@ -134,9 +135,9 @@ data2_counted <- data2_counted %>%
 datax <- dplyr::left_join(data1_binarized, data2_counted)
 
 # Save for further analysis
-write_csv2(data1_binarized, "Generated_Data/DASS_binarized.csv")
-write_csv2(data2_counted, "Generated_Data/DASS_freq_count.csv")
-write_csv2(datax, "Generated_Data/DASS_Matched_freq_count.csv")
+write_csv2(data1_binarized, "Analysis/DASS/Generated_Data/DASS_binarized.csv")
+write_csv2(data2_counted, "Analysis/DASS/Generated_Data/DASS_freq_count.csv")
+write_csv2(datax, "Analysis/DASS/Generated_Data/DASS_Matched_freq_count.csv")
 
 
 ######  5. Session info #########################################################

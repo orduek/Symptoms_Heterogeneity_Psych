@@ -47,13 +47,13 @@ library("poweRlaw")
 ###### 2. Import and prepare data ############################################
 ## Prepare
 # Load datax & data2 created in script one
-data1_binarized<- read_delim("~/Desktop/Symptom_count/Analyses/Latest/Symptom_count_DASS/Generated_Data/DASS_binarized.csv", 
+data1_binarized<- read_delim("Analysis/DASS/Generated_Data/DASS_binarized.csv", 
                              ";", escape_double = FALSE, trim_ws = TRUE)
 
-data2_counted<- read_delim("~/Desktop/Symptom_count/Analyses/Latest/Symptom_count_DASS/Generated_Data/DASS_freq_count.csv", 
+data2_counted<- read_delim("Analysis/DASS/Generated_Data/DASS_freq_count.csv", 
                            ";", escape_double = FALSE, trim_ws = TRUE)
 
-datax<- read_delim("~/Desktop/Symptom_count/Analyses/Latest/Symptom_count_DASS/Generated_Data/DASS_Matched_freq_count.csv", 
+datax<- read_delim("Analysis/DASS/Generated_Data/DASS_Matched_freq_count.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
 ###### 3. Descriptive #######################################################
@@ -144,7 +144,7 @@ est_m_ln_EQ = estimate_pars(m_ln_EQ)
 m_ln_EQ$setPars(est_m_ln_EQ)
 
 ## Bootstrap parameters
-bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 11, seed = 241)
 
 # Parameters
 m_ln_EQ$xmin

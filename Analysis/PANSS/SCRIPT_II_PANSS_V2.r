@@ -152,10 +152,10 @@ m_ln_EQ$pars[[2]]
 
 # SD 
 sd(bs_ln$bootstraps$xmin) #
-sd(bs_ln$bootstraps$pars1)
-sd(bs_ln$bootstraps$pars2)
+sd(bs_ln$bootstraps$pars1) # 27.006
+sd(bs_ln$bootstraps$pars2) # 1.02
 
-## Exponential with Xmin of PL
+i ## Exponential with Xmin of PL
 m_ex_EQ = disexp$new(Distribution) 
 m_ex_EQ$setXmin(m_pl$getXmin())
 est_m_ex_EQ = estimate_pars(m_ex_EQ)

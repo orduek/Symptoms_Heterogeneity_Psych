@@ -156,7 +156,7 @@ est_m_ln_EQ = estimate_pars(m_ln_EQ)
 m_ln_EQ$setPars(est_m_ln_EQ)
 
 ## Bootstrap parameters
-bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 10, seed = 241)
 
 # Parameters
 m_ln_EQ$xmin
@@ -165,8 +165,8 @@ m_ln_EQ$pars[[2]]
 
 # SD 
 sd(bs_ln$bootstraps$xmin) #
-sd(bs_ln$bootstraps$pars1)
-sd(bs_ln$bootstraps$pars2)
+sd(bs_ln$bootstraps$pars1) # 0.33
+sd(bs_ln$bootstraps$pars2) # 0.06
 
 ## Exponential with Xmin of PL
 m_ex_EQ = disexp$new(Distribution) 
