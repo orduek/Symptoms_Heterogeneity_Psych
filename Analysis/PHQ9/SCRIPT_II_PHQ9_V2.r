@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.1 (17.02.2022)                        #
+#                       Code Version 3.2 (22.02.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -158,6 +158,9 @@ est_m_ln_EQ = estimate_pars(m_ln_EQ)
 m_ln_EQ$setPars(est_m_ln_EQ)
 
 ## Bootstrap parameters
+bs_ln_p = bootstrap_p(m_ln_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ln_p$p 
+
 bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 10, seed = 241)
 
 # Parameters
@@ -177,6 +180,9 @@ est_m_ex_EQ = estimate_pars(m_ex_EQ)
 m_ex_EQ$setPars(est_m_ex_EQ)
 
 ## Bootstrap parameters
+bs_ex_p = bootstrap_p(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ex_p$p 
+
 bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
 
 # Parameters
