@@ -121,17 +121,17 @@ m_pl$setXmin(est_pl)
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
-bs_p$p 
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
+bs_p$p # 0.139
 
 # Estimated Parameters
-m_pl$xmin # Xmin
-m_pl$pars # alpha
+m_pl$xmin # Xmin 7
+m_pl$pars # alpha 2.103
 
-bs = bootstrap(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs = bootstrap(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
 # SD 
-sd(bs$bootstraps$xmin) 
-sd(bs$bootstraps$pars)
+sd(bs$bootstraps$xmin) # 3.47
+sd(bs$bootstraps$pars) # 0.071
 
 pdf("Images/PL_parameters_boot.pdf", width=8, height=8)
 plot(bs_p)
@@ -148,14 +148,14 @@ m_ln_EQ$setPars(est_m_ln_EQ)
 bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 11, seed = 241)
 
 # Parameters
-m_ln_EQ$xmin
-m_ln_EQ$pars[[1]]
-m_ln_EQ$pars[[2]]
+m_ln_EQ$xmin #
+m_ln_EQ$pars[[1]] # -16.98
+m_ln_EQ$pars[[2]]# 4.32
 
 # SD 
-sd(bs_ln$bootstraps$xmin) #
-sd(bs_ln$bootstraps$pars1)
-sd(bs_ln$bootstraps$pars2)
+sd(bs_ln$bootstraps$xmin) # 0.84
+sd(bs_ln$bootstraps$pars1)# 2.38
+sd(bs_ln$bootstraps$pars2) # 0.36
 
 ## Exponential with Xmin of PL
 m_ex_EQ = disexp$new(Distribution) 
@@ -164,15 +164,15 @@ est_m_ex_EQ = estimate_pars(m_ex_EQ)
 m_ex_EQ$setPars(est_m_ex_EQ)
 
 ## Bootstrap parameters
-bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 10, seed = 241)
 
 # Parameters
 m_ex_EQ$xmin
 m_ex_EQ$pars
 
 # SD 
-sd(bs_ex$bootstraps$xmin) #
-sd(bs_ex$bootstraps$pars)
+sd(bs_ex$bootstraps$xmin) # 59.89
+sd(bs_ex$bootstraps$pars) # 0.259
 
 # Plot different distributions
 options(scipen=5)

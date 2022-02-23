@@ -46,26 +46,18 @@ library("poweRlaw")
 ###### 2. Import and prepare data ############################################
 ## Prepare
 # Load datax & data2 created in script one
-data1_Nonbinarized<- read_delim("Analysis/PHQ9/Generated Data/nonbinarized.csv", 
-                             ";", escape_double = FALSE, trim_ws = TRUE)
-
-data2_counted<- read_delim("Analysis/PHQ9/Generated Data/freq_count_nonB.csv", 
-                           ";", escape_double = FALSE, trim_ws = TRUE)
-
-datax<- read_delim("Analysis/PHQ9/Generated Data/Matched_freq_count_nonB.csv", 
-                   ";", escape_double = FALSE, trim_ws = TRUE)
 
 
 ###
 
 
-data1_Nonbinarized<- read_delim("~/countSymptomsPTSD/Analysis/PHQ9/Generated Data/nonbinarized.csv", 
+data1_Nonbinarized<- read_delim("Analysis/PHQ9/Generated Data/Nonbinarized.csv", 
                                 ";", escape_double = FALSE, trim_ws = TRUE)
 
-data2_counted<- read_delim("~/countSymptomsPTSD/Analysis/PHQ9/Generated Data/freq_count_nonB.csv", 
+data2_counted<- read_delim("Analysis/PHQ9/Generated Data/freq_count_nonB.csv", 
                            ";", escape_double = FALSE, trim_ws = TRUE)
 
-datax<- read_delim("~/countSymptomsPTSD/Analysis/PHQ9/Generated Data/Matched_freq_count_nonB.csv", 
+datax<- read_delim("Analysis/PHQ9/Generated Data/Matched_freq_count_nonB.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
 ###### 3. Descriptive #######################################################
@@ -133,18 +125,18 @@ m_pl$setXmin(est_pl)
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
 bs_p$p 
 
 # Estimated Parameters
 m_pl$xmin # Xmin
 m_pl$pars # alpha
 
-bs = bootstrap(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs = bootstrap(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
 
 # SD 
-sd(bs$bootstraps$xmin) 
-sd(bs$bootstraps$pars)
+sd(bs$bootstraps$xmin) # 4.39
+sd(bs$bootstraps$pars) # 0.06
 
 pdf("Images/PL_parameters_boot.pdf", width=8, height=8)
 plot(bs_p)
@@ -177,7 +169,7 @@ est_m_ex_EQ = estimate_pars(m_ex_EQ)
 m_ex_EQ$setPars(est_m_ex_EQ)
 
 ## Bootstrap parameters
-bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 10, seed = 241)
 
 # Parameters
 m_ex_EQ$xmin

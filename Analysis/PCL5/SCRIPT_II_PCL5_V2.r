@@ -121,18 +121,18 @@ m_pl$setXmin(est_pl)
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
-bs_p$p 
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
+bs_p$p # 0.861
 
 # Estimated Parameters
-m_pl$xmin # Xmin
-m_pl$pars # alpha
+m_pl$xmin # Xmin 8
+m_pl$pars # alpha 1.86
 
-bs = bootstrap(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
+bs = bootstrap(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
 
 # SD 
-sd(bs$bootstraps$xmin) 
-sd(bs$bootstraps$pars)
+sd(bs$bootstraps$xmin) # 2.29
+sd(bs$bootstraps$pars) # 0.079
 
 pdf("Images/PL_parameters_boot.pdf", width=8, height=8)
 plot(bs_p)
@@ -150,8 +150,8 @@ bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 10, seed = 241)
 
 # Parameters
 m_ln_EQ$xmin
-m_ln_EQ$pars[[1]]
-m_ln_EQ$pars[[2]]
+m_ln_EQ$pars[[1]] # -27.53
+m_ln_EQ$pars[[2]] # 6.079
 
 # SD 
 sd(bs_ln$bootstraps$xmin) #
@@ -165,7 +165,7 @@ est_m_ex_EQ = estimate_pars(m_ex_EQ)
 m_ex_EQ$setPars(est_m_ex_EQ)
 
 ## Bootstrap parameters
-bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads =10, seed = 241)
 
 # Parameters
 m_ex_EQ$xmin
@@ -187,7 +187,9 @@ dev.off()
 # Formally assess
 compare_distributions(m_pl, m_ln_EQ)$p_two_sided # p < 0.95 -> one of the two has better fit
 compare_distributions(m_pl, m_ex_EQ)$p_two_sided # p < 0.12 -> one of the two has better fit
+plot(compare_distributions(m_pl, m_ex_EQ))
 compare_distributions(m_ex_EQ, m_ln_EQ)$p_two_sided # p < 0.12 -> one of the two has better fit
+compare_distributions(m_pl, m_ex_EQ)$p_one_sided
 
 compare_distributions(m_pl, m_ex_EQ)$p_one_sided #   p < 0.063 -> m_pl  better fit
 compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.063 -> m_ln_EQ better fit
@@ -203,7 +205,7 @@ save(freq1_top_PCL , file = "Analysis/PCL5/Generated Data/freq1_top_PCL.RData")
 res_pl_PCL <- plot(m_pl)
 line_pl_PCL <- lines(m_pl)
 line_ln_PCL <- lines(m_ln_EQ)
-line_ex_PCL <- lines(m_ex_EQ)
+line_ex_PCL<- lines(m_ex_EQ)
 
 save(res_pl_PCL, file = "Analysis/PCL5/Generated Data/res_pl_PCL.RData")
 save(line_pl_PCL, file = "Analysis/PCL5/Generated Data/line_pl_PCL.RData")
