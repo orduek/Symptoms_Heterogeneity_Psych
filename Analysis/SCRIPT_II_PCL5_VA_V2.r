@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 1.0 (18.11.2022)                        #
+#                       Code Version 1.1 (18.11.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -45,13 +45,13 @@ library("poweRlaw")
 ###### 2. Import and prepare data ############################################
 ## Prepare
 # Load datax & data2 created in script one
-data1_binarized<- read_delim("Analysis//binarized.csv", 
+data1_binarized<- read_delim("Analysis/VA/Generated Data//binarized.csv", 
                              ";", escape_double = FALSE, trim_ws = TRUE)
 
-data2_counted<- read_delim("Analysis/freq_count.csv", 
+data2_counted<- read_delim("Analysis/VA/Generated Data/freq_count.csv", 
                            ";", escape_double = FALSE, trim_ws = TRUE)
 
-datax<- read_delim("Analysis/Matched_freq_count.csv", 
+datax<- read_delim("Analysis/VA/Generated Data/Matched_freq_count.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
 
@@ -112,7 +112,7 @@ freq1_top  <- data2_counted %>%
   select(freq)
 
 # The frequency of the fifty most common symptom combinations
-pdf("Top_100_Phenotypes_PCL_5.pdf", width=8, height=8)
+pdf("Images/Top_100_Phenotypes_VA.pdf", width=8, height=8)
 ggplot(freq1_top, aes(x=as.factor(1:nrow(freq1_top)),y=freq)) +
   geom_hline(yintercept = c((median(datax$freq)), (max(freq1_top$freq))), color = "grey", size = 0.3) + #max and median
   geom_bar(stat = "identity",fill = "grey26") +
@@ -149,7 +149,7 @@ bs = bootstrap(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
 sd(bs$bootstraps$xmin) 
 sd(bs$bootstraps$pars)
 
-pdf("PL_parameters_boot.pdf", width=8, height=8)
+pdf("Images/PL_parameters_boot_VA.pdf", width=8, height=8)
 plot(bs_p)
 dev.off() 
 
@@ -198,7 +198,7 @@ sd(bs_ex$bootstraps$pars)
 
 # Plot different distributions
 options(scipen=5)
-pdf("PL_ML_CDF_equal_Xmin_PCL5.pdf", width=8, height=8)
+pdf("Images/PL_ML_CDF_equal_Xmin_VA.pdf", width=8, height=8)
 plot(m_pl, xlab = "", ylab="CDF",panel.first = grid(col = "grey80"))
 lines(m_pl, col = "red",lty = 1, lwd = 2) 
 lines(m_ln_EQ, col = "blue", lty = 2, lwd = 2) 
@@ -217,7 +217,7 @@ compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.063 -> m_ln_EQ bet
 ######  6. Export data for Figures ##############################################
 ### Figure 1a
 freq1_top_PCL <- freq1_top 
-save(freq1_top_PCL , file = "Analysis/freq1_top_PCL.RData")
+save(freq1_top_PCL , file = "Analysis/VA/Generated Data/freq1_top_PCL.RData")
 
 ### Figure 1b
 # Export m_pl & m_ln
@@ -226,10 +226,10 @@ line_pl_PCL <- lines(m_pl)
 line_ln_PCL <- lines(m_ln_EQ)
 line_ex_PCL <- lines(m_ex_EQ)
 
-save(res_pl_PCL, file = "Analysis/res_pl_PCL.RData")
-save(line_pl_PCL, file = "Analysis/line_pl_PCL.RData")
-save(line_ln_PCL, file = "Analysis/line_ln_PCL.RData")
-save(line_ex_PCL, file = "Analysis/line_ex_PCL.RData")
+save(res_pl_PCL, file = "Analysis/VA/Generated Data/res_pl_PCL.RData")
+save(line_pl_PCL, file = "Analysis/VA/Generated Data/line_pl_PCL.RData")
+save(line_ln_PCL, file = "Analysis/VA/Generated Data/line_ln_PCL.RData")
+save(line_ex_PCL, file = "Analysis/VA/Generated Data/line_ex_PCL.RData")
 
 ######  7. Session info #########################################################
 sessionInfo()
