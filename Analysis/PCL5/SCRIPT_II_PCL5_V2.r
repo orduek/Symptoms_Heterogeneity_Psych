@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.2 (22.02.2022)                        #
+#                       Code Version 3.3 (18.22.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -78,17 +78,31 @@ nrow(data2_counted) # 8174
 ## Number of endorsements of most common phenotype
 max(data2_counted$freq) # 20,575
 summary(data2_counted$freq) # median 1, q1-q3 1,1
-## Assess the three most common phenotypes
+
+## Assess the ten most common phenotypes
 data2_counted <- data2_counted %>% 
   arrange(desc(freq))
 
-print(data2_counted[1,]) # all symptoms
-print(data2_counted[2,]) # all but PCL-16
-print(data2_counted[3,]) # all but PCL- 8
+print(data2_counted[1,]) 
+print(data2_counted[2,]) 
+print(data2_counted[3,]) 
+print(data2_counted[4,]) 
+print(data2_counted[5,]) 
+print(data2_counted[6,]) 
+print(data2_counted[7,]) 
+print(data2_counted[8,]) 
+print(data2_counted[9,]) 
+print(data2_counted[10,]) 
+
 
 ## Median endorsement of phenotypes   ?!?!?!?!?!?!?!?!?
 summary(datax$freq) # median = 2453, Q1=25, Q3 = 20575
 hist(datax$freq) # plot
+
+## Number of  phenotypes,endorsed less than 6 times
+data_uncommon <- data2_counted %>% 
+  filter (freq < 6)
+
 
 ######  4.3 Plot the phenotypes distribution #################################
 ### 4.3.1 Plot the 100 most common phenotypes
