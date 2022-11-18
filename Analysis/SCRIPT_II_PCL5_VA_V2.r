@@ -217,7 +217,7 @@ compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.063 -> m_ln_EQ bet
 ######  6. Export data for Figures ##############################################
 ### Figure 1a
 freq1_top_PCL <- freq1_top 
-save(freq1_top_PCL , file = "Analysis/VA/Generated Data/freq1_top_PCL.RData")
+save(freq1_top_PCL , file = "Analysis/VA/Generated Data/freq1_top_VA.RData")
 
 ### Figure 1b
 # Export m_pl & m_ln
@@ -226,10 +226,10 @@ line_pl_PCL <- lines(m_pl)
 line_ln_PCL <- lines(m_ln_EQ)
 line_ex_PCL <- lines(m_ex_EQ)
 
-save(res_pl_PCL, file = "Analysis/VA/Generated Data/res_pl_PCL.RData")
-save(line_pl_PCL, file = "Analysis/VA/Generated Data/line_pl_PCL.RData")
-save(line_ln_PCL, file = "Analysis/VA/Generated Data/line_ln_PCL.RData")
-save(line_ex_PCL, file = "Analysis/VA/Generated Data/line_ex_PCL.RData")
+save(res_pl_PCL, file = "Analysis/VA/Generated Data/res_pl_VA.RData")
+save(line_pl_PCL, file = "Analysis/VA/Generated Data/line_pl_VA.RData")
+save(line_ln_PCL, file = "Analysis/VA/Generated Data/line_ln_VA.RData")
+save(line_ex_PCL, file = "Analysis/VA/Generated Data/line_ex_VA.RData")
 
 ######  7. Session info #########################################################
 sessionInfo()
