@@ -1,0 +1,393 @@
+##############################################################################
+#									                                                           #
+# 	 The Heterogeneity of Symptoms of Mental Disorders is Heavy-Tailed       #
+#                                                                            #
+#                         Or Duek & Tobias Spiller                           # 
+#                                                                            #
+#                       Code Version 1.0 (18.11.2022)                        #
+#                                                                            #
+#----------------------------------------------------------------------------#
+#                                                                            #
+#                       Script I -  Import and Binarize                      #
+#									                                                           #
+#----------------------------------------------------------------------------#
+#                                                                            #
+#                           DATA: PCL-5 RPTP                                 #
+#									                                                           #
+##############################################################################
+
+
+###### Table of Contents #####################################################
+#----- 1. Load libraries ----------------------------------------------------#
+#----- 2. Import and prepare data -------------------------------------------#
+#-----  2.1 Select variables for methods and materials ----------------------#
+#-----  2.2 Select & prepare dataset for further analysis -------------------#
+#----- 3. Descriptive -------------------------------------------------------#
+#----- 4. Binarizing & create datax  ----------------------------------------#
+#-----  4.1 Binarizing  ------------ ----------------------------------------#
+#-----  4.2 Create datax  ---------------------------------------------------#
+#----- 5. Session Info  -----------------------------------------------------#
+
+
+## General Notes ##
+# protector.all = raw data 
+# data0 = 
+# data1 = Extracted variables prepared for further analysis
+# data2 = binarized dataframe
+# datax = binarized & original items & frequency
+# variable_names = names of variable of data 1
+
+###### 1. Load Libraries #####################################################
+# Data handling + basic calculations
+library("tidyverse")
+library("readxl")
+library("foreign")
+library("ReIns")
+library("psych")
+
+# Data Import
+library(haven)
+library(sas7bdat)
+
+# Data handling
+library(lubridate)
+
+# Table
+library(table1)
+library(cowplot)
+library(see)
+library(gtsummary)
+library(gt)
+
+
+###### 2. Import and prepare data ############################################
+#### Import
+data_raw <- read_sas("Data/resid_fy16_20.sas7bdat")
+
+### Recode variable
+
+# Select and recode variables of interest
+data_reduced <- data_raw %>% 
+  select(ADMITDATE, s15:s17, A16:A69, STA5A)
+
+
+data_select <- data_reduced %>% 
+  mutate(DoB = mdy(A71),
+         # Age
+         Age_re = round(time_length((ADMITDATE- DoB), "year"), digits = 2),
+         
+         # Program Completion
+         Program_Completion = ifelse(s15 == 1, "Completed", "Not completed"),
+         
+         # Program Status
+         s16_re = factor(s16,
+                         levels = 1:9,
+                         labels = c("8+ sessions of PE", 
+                                    "8+ CBT Individual",
+                                    "8+ CBT Group", 
+                                    "Vet initiated, not completed 8 sessions",
+                                    "None, already completed EBP",
+                                    "None, declined to participate",
+                                    "None, CBT/PE not considered appropriate",
+                                    "None, CPT/PE not available",
+                                    "None, other")),
+         
+         # Kind of Therapy: PE vs CBT
+         PE_CBT = case_when(s16_re == "8+ sessions of PE" ~ "PE", 
+                            s16_re == "8+ CBT Individual" ~ "CBT", 
+                            s16_re == "8+ CBT Group" ~ "CBT"),
+         
+         # Kind of Therapy: Group vs Individual
+         Indiv_Group = case_when(s16_re == "8+ sessions of PE" ~ "Individual", 
+                                 s16_re == "8+ CBT Individual" ~ "Individual", 
+                                 s16_re == "8+ CBT Group" ~ "Group"),
+         
+         # Substance use disorder service use
+         SUD = factor(s17, levels = 0:3, labels = c("No","Yes","Yes","Yes")),
+         
+         # Education
+         Education = A87,
+         
+         # Education
+         Work_at_Admission = factor(A88, levels = 0:2, labels = c("No","Part-time","Full-time")),
+         
+         # Sex
+         A72_re = factor(A72,
+                         levels = 1:3,
+                         labels = c("Male", "Gender_female", "Prefer not to answer")),
+         
+         # Gender
+         A73_re = factor(A73, 
+                         levels = 1:6,
+                         labels = c("Man", "Woman", "Transgender man",
+                                    "Transgender women", "Other", 
+                                    "Prefer not to answer")),
+         
+         # Gender: Recode for Chart
+         Gender = case_when(A73 == 1 ~ "Man", 
+                            A73 == 2 ~ "Women", 
+                            A73 == 3 ~ "Other - Transgender/Other/No Answer", 
+                            A73 == 4 ~ "Other - Transgender/Other/No Answer",
+                            A73 == 5 ~ "Other - Transgender/Other/No Answer",
+                            A73 == 6 ~ "Other - Transgender/Other/No Answer"),
+         
+         # Gender: Recode for Analysis
+         Gender_female = case_when(A73 == 1 ~ 0, 
+                                   A73 == 2 ~ 1, 
+                                   A73 == 3 ~ 0, 
+                                   A73 == 4 ~ 0,
+                                   A73 == 5 ~ 0,
+                                   A73 == 6 ~ 0),
+         
+         Gender_other = case_when(A73 == 1 ~ 0, 
+                                  A73 == 2 ~ 0, 
+                                  A73 == 3 ~ 1, 
+                                  A73 == 4 ~ 1,
+                                  A73 == 5 ~ 1,
+                                  A73 == 6 ~ 0),
+         
+         Gender_PntS = case_when(A73 == 1 ~ 0, 
+                                 A73 == 2 ~ 0, 
+                                 A73 == 3 ~ 0, 
+                                 A73 == 4 ~ 0,
+                                 A73 == 5 ~ 0,
+                                 A73 == 6 ~ 1),
+         
+         # Race
+         Race = case_when(A78 == 1 ~ "Black", 
+                          A80 == 1 ~ "Black",
+                          A81 == 1 ~ "American Indian/Alaskian",
+                          A82 == 1 ~ "Asian", 
+                          A83 == 1 ~ "Pacific Islander",
+                          A84 == 1 ~ "Other", 
+                          A85 == 1 ~ "Prefer not to say",
+                          A77 == 1 ~ "White", 
+                          A79 == 1 ~ "White"),
+         #This statement is sensitive to the order of the arguments.
+         
+         Race_Other = case_when(Race == "White" ~ 0, 
+                                Race == "Black" ~ 0, 
+                                Race == "American Indian/Alaskian" ~ 1, 
+                                Race == "Asian" ~ 1, 
+                                Race == "Pacific Islander" ~ 1, 
+                                Race == "Other" ~ 1, 
+                                Race == "Prefer not to say"~ 0),
+         
+         Race_Black = case_when(Race == "White" ~ 0, 
+                                Race == "Black" ~ 1, 
+                                Race == "American Indian/Alaskian" ~ 0, 
+                                Race == "Asian" ~ 0, 
+                                Race == "Pacific Islander" ~ 0, 
+                                Race == "Other" ~ 0, 
+                                Race == "Prefer not to say"~ 0),
+         
+         Race_White = case_when(Race == "White" ~ 1, 
+                                Race == "Black" ~ 0, 
+                                Race == "American Indian/Alaskian" ~ 0, 
+                                Race == "Asian" ~ 0, 
+                                Race == "Pacific Islander" ~ 0, 
+                                Race == "Other" ~ 0, 
+                                Race == "Prefer not to say"~ 0),
+         
+         Race_PntS = case_when(Race == "White" ~ 0, 
+                               Race == "Black" ~ 0, 
+                               Race == "American Indian/Alaskian" ~ 0, 
+                               Race == "Asian" ~ 0, 
+                               Race == "Pacific Islander" ~ 0, 
+                               Race == "Other" ~ 0, 
+                               Race == "Prefer not to say"~ 1),
+         
+         Race_Analysis = case_when(Race_White == 1 ~ "White", 
+                                   Race_Black == 1 ~ "Black", 
+                                   Race_Other == 1 ~ "Other"),
+         
+         # Ethnicity
+         Ethnicity = case_when(A77 == 1 ~ "Non-Hispanic", 
+                               A78 == 1 ~ "Non-Hispanic",  
+                               A79 == 1 ~ "Hispanic", 
+                               A80 == 1 ~ "Hispanic",
+                               A81 == 1 ~ "Non-Hispanic", 
+                               A82 == 1 ~ "Non-Hispanic",  
+                               A83 == 1 ~ "Non-Hispanic", 
+                               A84 == 1 ~ "Non-Hispanic",  
+                               A85 == 1 ~ "Prefer not to say"),
+         
+         Ethnicity_Hispanic = case_when(A77 == 1 ~ 0, 
+                                        A78 == 1 ~ 0,  
+                                        A79 == 1 ~ 1, 
+                                        A80 == 1 ~ 1,
+                                        A81 == 1 ~ 0, 
+                                        A82 == 1 ~ 0,  
+                                        A83 == 1 ~ 0, 
+                                        A84 == 1 ~ 0,  
+                                        A85 == 1 ~ 0),
+         
+         Ethnicity_Non_Hispanic = case_when(A77 == 1 ~ 1, 
+                                            A78 == 1 ~ 1,  
+                                            A79 == 1 ~ 0, 
+                                            A80 == 1 ~ 0,
+                                            A81 == 1 ~ 1, 
+                                            A82 == 1 ~ 1,  
+                                            A83 == 1 ~ 1, 
+                                            A84 == 1 ~ 1,  
+                                            A85 == 1 ~ 0),
+         
+         Ethnicity_PntS = case_when(A77 == 1 ~ 0, 
+                                    A78 == 1 ~ 0,  
+                                    A79 == 1 ~ 0, 
+                                    A80 == 1 ~ 0,
+                                    A81 == 1 ~ 0, 
+                                    A82 == 1 ~ 0,  
+                                    A83 == 1 ~ 0, 
+                                    A84 == 1 ~ 0,  
+                                    A85 == 1 ~ 1),
+         
+         Ethnicity_Analysis = case_when(Ethnicity_Hispanic == 1 ~ "Hispanic", 
+                                        Ethnicity_Non_Hispanic == 1 ~ "Non Hispanic"),
+         
+         Combat_Trauma = case_when(A18 == 1 ~ 1, 
+                                   A18 == 0 ~ 0)) %>% 
+  rowwise()  
+
+# Sanity checks and control
+
+data_select$A19[is.na(data_select$A19)] <-0
+data_select$A20[is.na(data_select$A20)] <-0
+data_select$A21[is.na(data_select$A21)] <-0
+data_select$A22[is.na(data_select$A22)] <-0
+data_select$A23[is.na(data_select$A23)] <-0
+data_select$A24[is.na(data_select$A24)] <-0
+data_select$A25[is.na(data_select$A25)] <-0
+data_select$A26[is.na(data_select$A26)] <-0
+
+data_select$A19[data_select$A19==3] <-NA
+data_select$A20[data_select$A20==3] <-NA
+data_select$A25[data_select$A25==4] <-NA
+data_select$A25[data_select$A25==7] <-NA
+data_select$A26[data_select$A26==4] <-NA
+
+
+# Recalculate scores, with missing data in an item of the score resulting in NA
+data_select <- data_select %>% 
+  mutate(PCL_A_no_NA = sum(c_across(A27:A46), na.rm = FALSE))
+
+# Select
+data_selected_filter <- data_select %>% 
+  filter(!is.na(PCL_A_no_NA)) %>%  
+  filter(Age_re > 18 & Age_re < 100, !is.na(Gender)) 
+
+
+### Participant flow
+# Create Matrix
+p_flow_main <- matrix(nrow = 3, ncol = 2)
+colnames(p_flow_main) <- c("Sample", "Size")
+
+## Assess sample sizes
+# Level 1
+p_flow_main[1,1] <- "Full sample"
+p_flow_main[1,2] <- data_select %>% 
+  nrow()
+
+# Level 2
+p_flow_main[2,1] <- "Not full outcome data"
+p_flow_main[2,2] <- data_select %>% 
+  filter(!is.na(PCL_A_no_NA)) %>% 
+  nrow()
+
+# Level 3
+p_flow_main[3,1] <- "Missing demographics"
+p_flow_main[3,2] <- data_select %>%   
+  filter(!is.na(PCL_A_no_NA)) %>% 
+  filter(Age_re > 18 & Age_re < 100, !is.na(Gender)) %>% 
+  nrow()
+
+
+### Summary Participant flow
+p_flow_main
+
+# Descriptive
+## Cronbach's alpha
+summary(psych::alpha(subset(data_selected_filter, select = (A27:A46))))
+
+
+
+
+## Table 1: Participants characteristics.
+# Rename
+data_table1 <- data_selected_filter 
+
+# Add labels
+table1::label(data_table1$PCL_A_no_NA) <- "PCL Baseline"
+table1::label(data_table1$Age_re) <- "Age"
+
+# Set Theme
+theme_gtsummary_journal(journal = "nejm")
+theme_gtsummary_compact()
+
+data_table1 %>%
+  select(Age_re, Gender, PCL_A_no_NA, STA5A) %>%
+  tbl_summary() %>% 
+  modify_header(label ~ "**Variable**") %>%
+  modify_caption("Table 1. Patient Characteristics") %>%
+  bold_labels()
+
+
+# Prepare Analysis
+
+data_power <- data_selected_filter %>% 
+  select(A27:A46)
+
+#Rename data
+## Rename variables to "Q1:QN" for binarization
+data1 <- data_power
+colnames(data1) <- c(paste0("Q", 1:(ncol(data1))))
+
+## Add total score
+total = rowSums(data1)
+data1 <- cbind(data1, total)
+
+###### 4. Binarizing & create datax ###########################################
+######  4.1 Binarizing ########################################################
+## set cut-off
+cut_off <- 1 #will be used with <= // Specify for individual analysis
+
+## Binarize
+data1_binarized <- data1
+for (i in 1:(ncol(data1)-1)){
+  orig <- paste("q", i, sep = "")
+  bin <- paste("Q", i, sep = "")
+  data1_binarized[orig] <- dplyr::case_when(data1_binarized[bin]<= cut_off ~ 0, data1_binarized[bin]>cut_off ~ 1)  #0 = "Symptom absent", 1 = "Symptom present"
+  
+}
+
+# Create new data frame
+data2 <- data1_binarized %>% 
+  select(total:ncol(data1_binarized)) %>% 
+  select(-total) %>% 
+  tibble()
+
+## Count frequency of profiles
+data2_counted <- plyr::count(data2[, ])
+
+# Create sum score of endorsed symptoms
+data2_counted <- data2_counted %>% 
+  mutate(total_bin = rowSums(data2_counted)-freq)
+
+
+######  4.2 Create datax ########################################################
+# Create full dataset
+datax <- dplyr::left_join(data1_binarized, data2_counted)
+
+# Save for further analysis
+write_csv2(data1_binarized, "Analysis/binarized.csv")
+write_csv2(data2_counted, "Analysis/freq_count.csv")
+write_csv2(datax, "Analysis/Matched_freq_count.csv")
+
+
+######  5. Session info #########################################################
+sessionInfo()
+
+
+
+
+#####################################  END  ####################################
