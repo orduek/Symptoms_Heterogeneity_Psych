@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.1 (17.02.2022)                        #
+#                       Code Version 3.2 (22.02.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -85,7 +85,8 @@ data2_counted <- data2_counted %>%
 print(data2_counted[1,]) # all symptoms
 print(data2_counted[2,]) # all but PCL-16
 print(data2_counted[3,]) # all but PCL- 8
-
+print(data2_counted[4,]) # all but PCL- 8
+print(data2_counted[5,]) # all but PCL- 8
 ## Median endorsement of phenotypes   ?!?!?!?!?!?!?!?!?
 summary(datax$freq) # median = 2453, Q1=25, Q3 = 20575
 hist(datax$freq) # plot
@@ -99,8 +100,8 @@ freq1_top  <- data2_counted %>%
 # The frequency of the fifty most common symptom combinations
 pdf("Images/Top_100_Phenotypes_PCL_5.pdf", width=8, height=8)
 ggplot(freq1_top, aes(x=as.factor(1:nrow(freq1_top)),y=freq)) +
-  geom_hline(yintercept = c((median(datax$freq)), (max(freq1_top$freq))), color = "grey", size = 0.3) + #max and median
-  geom_bar(stat = "identity",fill = "grey26") +
+  geom_hline(yintercept = c((median(datax$freq)), (max(freq1_top$freq))), color = "gray", size = 0.3) + #max and median
+  geom_bar(stat = "identity",fill = c('red',"slateblue")) +
   xlab(" ") + 
   ylab("Number of endorsements") +
   theme_classic() +
@@ -146,6 +147,9 @@ est_m_ln_EQ = estimate_pars(m_ln_EQ)
 m_ln_EQ$setPars(est_m_ln_EQ)
 
 ## Bootstrap parameters
+bs_ln_p = bootstrap_p(m_ln_EQ, no_of_sims = 5000, threads = 10, seed = 241)
+bs_ln_p$p # 0.507
+
 bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 10, seed = 241)
 
 # Parameters
@@ -165,7 +169,11 @@ est_m_ex_EQ = estimate_pars(m_ex_EQ)
 m_ex_EQ$setPars(est_m_ex_EQ)
 
 ## Bootstrap parameters
-bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads =10, seed = 241)
+
+bs_ex_p = bootstrap_p(m_ex_EQ, no_of_sims = 5000, threads = 10, seed = 241)
+bs_ex_p$p # 0
+
+bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
 
 # Parameters
 m_ex_EQ$xmin
