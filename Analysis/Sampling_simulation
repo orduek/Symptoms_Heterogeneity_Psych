@@ -1,0 +1,223 @@
+##############################################################################
+#									                                                           #
+# 	 The Heterogeneity of Symptoms of Mental Disorders is Heavy-Tailed       #
+#                                                                            #
+#                         Or Duek & Tobias Spiller                           # 
+#                                                                            #
+#                     Code Version 2.0.0 (18.11.2022)                        #
+#                                                                            #
+#----------------------------------------------------------------------------#
+#                                                                            #
+#          Supplementary Analysis - Distribution across samples              #
+#									                                                           #
+#----------------------------------------------------------------------------#
+#                                                                            #
+#                               DATA: PCL - VA                               #
+#									                                                           #
+##############################################################################
+
+
+###### Table of Contents #####################################################
+#----- 1. Load libraries ----------------------------------------------------#
+#----- 2. Import and prepare data -------------------------------------------#
+#----- 3. Descriptive -------------------------------------------------------#
+#----- 4. Top Profiles ------------------------------------------------------#
+#-----  4.1 Define function -------------------------------------------------#
+#-----  4.2 Execute function ------------------------------------------------#
+#-----  4.3 Define conditions for the simulation ----------------------------#
+#-----  4.4 Results ---------------------------------------------------------#
+#----- 5. Low Profiles ------------------------------------------------------#
+#-----  5.1 Define function -------------------------------------------------#
+#-----  5.2 Execute function ------------------------------------------------#
+#-----  5.3 Define conditions for the simulation ----------------------------#
+#-----  5.4 Results ---------------------------------------------------------#
+#----- 6. Session Info  -----------------------------------------------------#
+
+###### 1. Load Libraries #####################################################
+
+# Psychpower
+library("PsychPower")
+
+# Data handling + basic calculations
+library("tidyverse")
+library("foreign")
+library("ReIns")
+
+###### 2. Import and prepare data ############################################
+#### Import
+# Load datax & data2 created in script one
+data1_binarized<- read_delim("Analysis/binarized.csv", 
+                             ";", escape_double = FALSE, trim_ws = TRUE)
+
+# Select rows of interest
+data_bin <- data1_binarized %>% select("q1":"q20")
+
+###### 3. Set seed ##########################################################
+set.seed(241)
+
+###### 4. Top Profiles ######################################################
+###### 4.1 Define function ##################################################
+top_across <-
+  function(data, 
+           n_sample = 100, 
+           sample_size = 500, 
+           top_profiles = 50,
+           target_col = tidyselect::starts_with("q")) {
+    
+    # Create storage
+    Res <- list()
+    Res_diff <- list()
+    Res_arr <- list()
+    delta <- list()
+    
+    # Create reference
+    Reference <- PsychPower::pheno_frequency(data, target_columns = target_col)
+    Reference <- Reference %>% 
+      arrange(desc(freq)) %>%  
+      top_n(freq, n = top_profiles) %>% 
+      select(q1:q20) #target_col
+    
+    # Sample from input
+    for (i in 1:n_sample){
+      data_bin_sample <- sample_n(data, sample_size)
+      Res[[i]] <- pheno_frequency(data_bin_sample, target_columns = tidyselect::starts_with("q"))
+    }
+    
+    # Arrange
+    for (i in 1:length(Res)){
+      Res_arr[[i]] <- Res[[i]] %>% 
+        arrange(desc(freq)) %>%  
+        top_n(freq, n = top_profiles) %>% 
+        select(q1:q20) #target_col
+    }
+    
+    # Differences between Reference and samples
+    for (i in 1:length(Res)){
+      delta[[i]] <- setdiff(Reference, Res_arr[[i]])
+      Res_diff[[i]] <- delta[[i]] %>% nrow()
+    }
+    
+    Res_diff_vector <- unlist(Res_diff)
+    
+    return(c(median(Res_diff_vector), quantile(Res_diff_vector, .25), quantile(Res_diff_vector, .75)))
+  }
+
+###### 4.2 Execute function ##################################################
+top_across(data_bin, 
+           n_sample = 100, 
+           sample_size = 100, 
+           top_profiles = 10)
+
+###### 4.3 Define conditions for the simulation ##############################
+# Define grid
+top_grid <-
+  expand.grid(n_sample = c(10^3),
+              sample_size = c(100, 500, 1000),
+              top_profiles = c(10, 25))
+
+# Define storage
+top_grid_res <- list() #Simulated data is stored in this list as separate data sets
+
+# Simulate
+for (i in 1:nrow(top_grid)) {
+  top_grid_res[[i]] <- top_across(
+    data = data_bin,
+    n_sample = top_grid[i,1], 
+    sample_size = top_grid[i,2], 
+    top_profiles = top_grid[i,3])
+}
+
+top_grid_res_matrix <- matrix(unlist(top_grid_res), ncol = 3, byrow = TRUE)
+
+top_grid$Median_difference <- top_grid_res_matrix[,1]
+top_grid$Q25_difference <- top_grid_res_matrix[,2]
+top_grid$Q75_difference <- top_grid_res_matrix[,3]
+
+###### 4.4 Results ##########################################################
+top_grid
+
+
+###### 5. Low Profiles ######################################################
+###### 5.1 Define function ##################################################
+low_across <-
+  function(data, 
+           n_sample = 100, 
+           sample_size = 500, 
+           n_prof_freq_less = 5,
+           target_col = tidyselect::starts_with("q")) {
+    
+    # Create storage
+    Res <- list()
+    Res_diff <- list()
+    Res_arr <- list()
+    delta <- list()
+    
+    # Sample from input
+    for (i in 1:n_sample){
+      data_bin_sample <- sample_n(data, sample_size)
+      Res[[i]] <- pheno_frequency(data_bin_sample, target_columns = tidyselect::starts_with("q"))
+    }
+    
+    # Filter
+    for (i in 1:length(Res)){
+      Res_arr[[i]] <- Res[[i]] %>% 
+        filter(freq < n_prof_freq_less) %>% 
+        select(q1:q20) #target_col
+    }
+    
+    # Differences between Reference and samples
+    for (i in 1:length(Res)){
+      delta[[i]] <- setdiff(Res_arr[[1]], Res_arr[[i]])
+      Res_diff[[i]] <- delta[[i]] %>% nrow()
+    }
+    
+    # Remove first sample, as it is the reference
+    Res_diff <- Res_diff[c(2:length(Res_diff))]
+    Res_diff_vector <- unlist(Res_diff)
+    
+    # RESULTS
+    return(c(Res_arr[[1]] %>% nrow(), mean(Res_diff_vector), sd(Res_diff_vector)))
+  }
+
+###### 5.2 Execute function ##################################################
+low_across(data_bin, 
+           n_sample = 10, 
+           sample_size = 500, 
+           n_prof_freq_less = 5)
+
+
+###### 5.3 Define conditions for the simulation ##############################
+# Define grid
+low_grid <-
+  expand.grid(n_sample = c(10^3),
+              sample_size = c(100, 500, 1000),
+              n_prof_freq_less = c(2, 5))
+
+low_grid_res <- list() #Simulated data is stored in this list as separate data sets
+
+# Simulate
+for (i in 1:nrow(low_grid)) {
+  low_grid_res[[i]] <- low_across(
+    data = data_bin,
+    n_sample = low_grid[i,1], 
+    sample_size = low_grid[i,2], 
+    n_prof_freq_less = low_grid[i,3])
+}
+
+low_grid_res_matrix <- matrix(unlist(low_grid_res), ncol =3, byrow = TRUE)
+
+low_grid$N_rare_pheno_ref <- low_grid_res_matrix[,1]
+low_grid$Mean_difference <- low_grid_res_matrix[,2]
+low_grid$SD_difference <- low_grid_res_matrix[,3]
+
+###### 5.4 Results ##########################################################
+low_grid
+
+######  6. Save #############################################################
+save(high_grid_res , file = "Generated Data/high_grid_res.RData")
+save(low_grid_res , file = "Generated Data/low_grid_res.RData")
+
+######  7. Session info #####################################################
+sessionInfo()
+
+#####################################  END  #################################

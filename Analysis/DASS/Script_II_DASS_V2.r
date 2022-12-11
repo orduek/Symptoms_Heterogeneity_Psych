@@ -86,6 +86,9 @@ print(data2_counted[1,]) #
 print(data2_counted[2,]) # 
 print(data2_counted[3,]) # 
 
+# top ten 
+gt(data2_counted[1:10,1:13]) %>% gtsave('Analysis/DASS/topTenBinarizedDASS.rtf')
+
 ## Median endorsement of phenotypes  
 summary(datax$freq) # median 49
 hist(datax$freq) # plot
@@ -190,6 +193,16 @@ compare_distributions(m_ex_EQ, m_ln_EQ)$p_two_sided # p < 0.05 -> one of the two
 
 compare_distributions(m_pl, m_ex_EQ)$p_one_sided #   p < 0.05 -> m_pl  better fit
 compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.05 -> m_ln_EQ better fit
+
+
+## Figures of combined data ####
+source('plotting_functions.r')
+png('Images/hist_DASS_top100.png')
+plotHundred(nCommon = 10, freq1_top = freq1_top)# %>% ggsave('Images/hist_PCL5_top100.png')
+dev.off()
+png('Images/stackedBar_DASS.png')
+stackedPlot(freq1_top = freq1_top, 10, data2_counted = data2_counted, datax)
+dev.off()
 
 ######  6. Export data for Figures ##############################################
 ### Figure 1a

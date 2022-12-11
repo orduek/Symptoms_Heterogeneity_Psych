@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 2.1 (01.06.2021)                        #
+#                       Code Version 2.2 (01.06.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -87,8 +87,8 @@ variable_names <- c(names(data1))
 colnames(data1) <- c(paste0("Q", 1:(ncol(data1))))
 
 ## Add total score
-data1 <- data1 %>% 
-  mutate(total = rowSums(data1[1:ncol(data1)]))
+total = rowSums(data1)
+data1 <- cbind(data1, total)
 
 
 ###### 3. Descriptive #######################################################

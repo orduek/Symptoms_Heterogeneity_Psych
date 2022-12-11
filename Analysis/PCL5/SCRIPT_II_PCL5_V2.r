@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.2 (22.02.2022)                        #
+#                       Code Version 3.3 (18.22.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -78,18 +78,33 @@ nrow(data2_counted) # 8174
 ## Number of endorsements of most common phenotype
 max(data2_counted$freq) # 20,575
 summary(data2_counted$freq) # median 1, q1-q3 1,1
-## Assess the three most common phenotypes
+
+## Assess the ten most common phenotypes
 data2_counted <- data2_counted %>% 
   arrange(desc(freq))
 
-print(data2_counted[1,]) # all symptoms
-print(data2_counted[2,]) # all but PCL-16
-print(data2_counted[3,]) # all but PCL- 8
-print(data2_counted[4,]) # all but PCL- 8
-print(data2_counted[5,]) # all but PCL- 8
+
+print(data2_counted[1,]) 
+print(data2_counted[2,]) 
+print(data2_counted[3,]) 
+print(data2_counted[4,]) 
+print(data2_counted[5,]) 
+print(data2_counted[6,]) 
+print(data2_counted[7,]) 
+print(data2_counted[8,]) 
+print(data2_counted[9,]) 
+print(data2_counted[10,]) 
+
+gt(data2_counted[1:10,1:20])%>% gtsave('Analysis/PCL5/Generated Data/ten_common_pcl5.rtf')#'item2','item3','item4','item5','item6','item7','item8','item9','item10')
+
 ## Median endorsement of phenotypes   ?!?!?!?!?!?!?!?!?
 summary(datax$freq) # median = 2453, Q1=25, Q3 = 20575
 hist(datax$freq) # plot
+
+## Number of  phenotypes,endorsed less than 6 times
+data_uncommon <- data2_counted %>% 
+  filter (freq < 6)
+
 
 ######  4.3 Plot the phenotypes distribution #################################
 ### 4.3.1 Plot the 100 most common phenotypes
@@ -201,6 +216,37 @@ compare_distributions(m_pl, m_ex_EQ)$p_one_sided
 
 compare_distributions(m_pl, m_ex_EQ)$p_one_sided #   p < 0.063 -> m_pl  better fit
 compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.063 -> m_ln_EQ better fit
+
+
+### Plot 100 most common and stack plot ####
+
+source('plotting_functions.r')
+png('Images/hist_PCL5_top100.png')
+plotHundred(nCommon = 10, freq1_top = freq1_top)# %>% ggsave('Images/hist_PCL5_top100.png')
+dev.off()
+png('Images/stackedBar_PCL5.png')
+stackedPlot(freq1_top = freq1_top, 10, data2_counted = data2_counted, datax = datax)
+dev.off()
+################################################
+## Calculating prevalence of specific symptom ##
+################################################
+sum(data2_counted$q1) / nrow(data2_counted) # 0.747
+
+sum(datax$q1) / nrow(datax) # 0.9449
+# go over each item
+for (i in 1:20) {
+  print(
+  sum(data2_counted[,i]) / nrow(data2_counted)  
+  )
+}
+
+# do it per person
+for (i in 22:41) {
+  print(
+    sum(datax[,i]) / nrow(datax)
+  )
+}
+#######
 
 
 ######  6. Export data for Figures ##############################################
