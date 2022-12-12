@@ -137,9 +137,9 @@ data2_counted <- data2_counted %>%
 datax <- dplyr::left_join(data1_binarized, data2_counted)
 
 # Save for further analysis
-write_csv2(data1, "Analysis/PHQ9/Generated Data/nonbinarized.csv")
-write_csv2(data2_counted, "Analysis/PHQ9/Generated Data/freq_count.csv")
-write_csv2(datax, "Analysis/PHQ9/Generated Data/Matched_freq_count.csv")
+write_csv2(data1, "Analysis/PHQ9/Generated Data/binarized.csv")
+write_csv2(data2_counted, "Analysis/PHQ9/Generated Data/Binarized_freq_count.csv")
+write_csv2(datax, "Analysis/PHQ9/Generated Data/Binarized_Matched_freq_count.csv")
 
 
 ######  5. Session info #########################################################

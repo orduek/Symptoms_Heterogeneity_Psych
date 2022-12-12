@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.1 (17.02.2022)                        #
+#                       Code Version 3.2 (22.02.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -51,13 +51,13 @@ library("poweRlaw")
 ###
 
 
-data1_Nonbinarized<- read_delim("Analysis/PHQ9/Generated Data/Nonbinarized.csv", 
+data1_Nonbinarized<- read_delim("Analysis/PHQ9/Generated Data/binarized.csv", 
                                 ";", escape_double = FALSE, trim_ws = TRUE)
 
-data2_counted<- read_delim("Analysis/PHQ9/Generated Data/freq_count_nonB.csv", 
+data2_counted<- read_delim("Analysis/PHQ9/Generated Data/Binarized_freq_count.csv", 
                            ";", escape_double = FALSE, trim_ws = TRUE)
 
-datax<- read_delim("Analysis/PHQ9/Generated Data/Matched_freq_count_nonB.csv", 
+datax<- read_delim("Analysis/PHQ9/Generated Data/Binarized_Matched_freq_count.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
 ###### 3. Descriptive #######################################################
@@ -89,6 +89,9 @@ data2_counted <- data2_counted %>%
 print(data2_counted[1,]) # Non - i.e. all zeros
 print(data2_counted[2,]) # All 3
 print(data2_counted[3,]) #  All 3 but Q9
+
+# ten most common symptoms
+gt(data2_counted[1:10,1:9]) %>% gtsave('Analysis/PHQ9/topTenBinarized.rtf')
 
 ## Median endorsement of phenotypes   ?!?!?!?!?!?!?!?!?
 summary(datax$freq) # Median = 12
@@ -125,8 +128,8 @@ m_pl$setXmin(est_pl)
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 10, seed = 241)
-bs_p$p 
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 12, seed = 241)
+bs_p$p # 0.2478
 
 # Estimated Parameters
 m_pl$xmin # Xmin
@@ -150,6 +153,9 @@ est_m_ln_EQ = estimate_pars(m_ln_EQ)
 m_ln_EQ$setPars(est_m_ln_EQ)
 
 ## Bootstrap parameters
+bs_ln_p = bootstrap_p(m_ln_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ln_p$p # 
+
 bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 10, seed = 241)
 
 # Parameters
@@ -169,7 +175,11 @@ est_m_ex_EQ = estimate_pars(m_ex_EQ)
 m_ex_EQ$setPars(est_m_ex_EQ)
 
 ## Bootstrap parameters
-bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 10, seed = 241)
+
+bs_ex_p = bootstrap_p(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
+bs_ex_p$p # 0
+
+bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
 
 # Parameters
 m_ex_EQ$xmin
@@ -195,6 +205,41 @@ compare_distributions(m_ex_EQ, m_ln_EQ)$p_two_sided # p < 0.0002 -> one of the t
 
 compare_distributions(m_pl, m_ex_EQ)$p_one_sided #   p < 0.0001 -> m_pl  better fit
 compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.0001 -> m_ln_EQ better fit
+
+
+#### Figures ####
+source('plotting_functions.r')
+png('Images/hist_PHQ9_top100.png')
+plotHundred(nCommon = 10, freq1_top = freq1_top)# %>% ggsave('Images/hist_PCL5_top100.png')
+dev.off()
+png('Images/stackedBar_PHQ9.png')
+stackedPlot(freq1_top = freq1_top, 10, data2_counted = data2_counted, datax)
+dev.off()
+
+################################################
+## Calculating prevalence of specific symptom ##
+################################################
+sum(data2_counted$q1) / nrow(data2_counted) #
+
+sum(datax$q1) / nrow(datax) #
+# go over each item
+h <- matrix(nrow = 9, ncol = 2)
+for (i in 1:9) {
+  h[i,2] <- sum(data2_counted[,i]) / nrow(data2_counted)  
+  h[i,1] <- i
+  
+}
+gt(data.frame(h)) %>% gtsave('Analysis/PHQ9/Generated Data/frequency_perProfile_PHQ9L.rtf')
+# do it per person
+
+l <- matrix(nrow=9, ncol=2)
+for (i in 11:19) {
+  l[i-10,2] <- sum(datax[,i]) / nrow(datax)
+  l[i-10,1] <- i-10
+}
+
+gt(data.frame(l)) %>% gtsave('Analysis/PHQ9/Generated Data/frequency_perPerson_PHQ9.rtf')
+
 
 ######  6. Export data for Figures ##############################################
 ### Figure 1a

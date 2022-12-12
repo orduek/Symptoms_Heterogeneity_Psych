@@ -234,18 +234,22 @@ sum(data2_counted$q1) / nrow(data2_counted) # 0.747
 
 sum(datax$q1) / nrow(datax) # 0.9449
 # go over each item
+h <- matrix(nrow = 20, ncol = 2)
 for (i in 1:20) {
-  print(
-  sum(data2_counted[,i]) / nrow(data2_counted)  
-  )
+  h[i,2] <- sum(data2_counted[,i]) / nrow(data2_counted)  
+  h[i,1] <- i
+  
+}
+gt(data.frame(h)) %>% gtsave('Analysis/PCL5/Generated Data/frequency_perProfile_PCL.rtf')
+# do it per person
+
+l <- matrix(nrow=20, ncol=2)
+for (i in 22:41) {
+  l[i-21,2] <- sum(datax[,i]) / nrow(datax)
+  l[i-21,1] <- i-21
 }
 
-# do it per person
-for (i in 22:41) {
-  print(
-    sum(datax[,i]) / nrow(datax)
-  )
-}
+gt(data.frame(l)) %>% gtsave('Analysis/PCL5/Generated Data/frequency_perPerson_PCL.rtf')
 #######
 
 

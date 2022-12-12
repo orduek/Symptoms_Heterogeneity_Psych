@@ -204,6 +204,30 @@ png('Images/stackedBar_DASS.png')
 stackedPlot(freq1_top = freq1_top, 10, data2_counted = data2_counted, datax)
 dev.off()
 
+
+################################################
+## Calculating prevalence of specific symptom ##
+################################################
+sum(data2_counted$q1) / nrow(data2_counted) # 
+
+sum(datax$q1) / nrow(datax) # 
+# go over each item
+h <- matrix(nrow = 13, ncol = 2)
+for (i in 1:13) {
+  h[i,2] <- sum(data2_counted[,i]) / nrow(data2_counted)  
+  h[i,1] <- i
+  
+}
+gt(data.frame(h)) %>% gtsave('Analysis/DASS/Generated_Data/frequency_perProfile_DASS.rtf')
+# do it per person
+
+l <- matrix(nrow=13, ncol=2)
+for (i in 15:27) {
+  l[i-14,2] <- sum(datax[,i]) / nrow(datax)
+  l[i-14,1] <- i-14
+}
+
+gt(data.frame(l)) %>% gtsave('Analysis/DASS/Generated_Data/frequency_perPerson_DASS.rtf')
 ######  6. Export data for Figures ##############################################
 ### Figure 1a
 freq1_top_DASS <- freq1_top 

@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.1 (17.02.2021)                        #
+#                       Code Version 3.2 (22.02.2021)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -85,6 +85,9 @@ print(data2_counted[1,]) # all zero
 print(data2_counted[2,]) # zero expect q12 (negative symptom)
 print(data2_counted[3,]) # zero expect q3 (positive)
 
+# ten most common symptoms
+gt(data2_counted[1:10, 1:14]) %>% gtsave('Analysis/PANSS/tenMostCommon.rtf')
+
 ## Median endorsement of phenotypes   ?!?!?!?!?!?!?!?!?
 summary(datax$freq) # median = 16, q1-q3 = 3-239
 hist(datax$freq) # plot
@@ -120,8 +123,8 @@ m_pl$setXmin(est_pl)
 
 ## Bootstrap parameters
 ## Test whether power law is possible
-bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 5, seed = 241)
-bs_p$p 
+bs_p = bootstrap_p(m_pl, no_of_sims = 5000, threads = 12, seed = 241)
+bs_p$p # 0.2196
 
 # Estimated Parameters
 m_pl$xmin # Xmin
@@ -145,6 +148,9 @@ est_m_ln_EQ = estimate_pars(m_ln_EQ)
 m_ln_EQ$setPars(est_m_ln_EQ)
 
 ## Bootstrap parameters
+bs_ln_p = bootstrap_p(m_ln_EQ, no_of_sims = 5000, threads = 10, seed = 241)
+bs_ln_p$p #0.364
+
 bs_ln = bootstrap(m_ln_EQ, no_of_sims = 5000, threads = 5, seed = 241)
 
 # Parameters
@@ -157,13 +163,16 @@ sd(bs_ln$bootstraps$xmin) #
 sd(bs_ln$bootstraps$pars1) # 27.006
 sd(bs_ln$bootstraps$pars2) # 1.02
 
-i ## Exponential with Xmin of PL
+## Exponential with Xmin of PL
 m_ex_EQ = disexp$new(Distribution) 
 m_ex_EQ$setXmin(m_pl$getXmin())
 est_m_ex_EQ = estimate_pars(m_ex_EQ)
 m_ex_EQ$setPars(est_m_ex_EQ)
 
 ## Bootstrap parameters
+bs_ex_p = bootstrap_p(m_ex_EQ, no_of_sims = 5000, threads = 10, seed = 241)
+bs_ex_p$p # 0
+
 bs_ex = bootstrap(m_ex_EQ, no_of_sims = 5000, threads = 5, seed = 241)
 
 # Parameters
@@ -190,6 +199,41 @@ compare_distributions(m_ex_EQ, m_ln_EQ)$p_two_sided # p < 0.0023 -> one of the t
 
 compare_distributions(m_pl, m_ex_EQ)$p_one_sided #   p < 0.001 -> m_pl  better fit
 compare_distributions(m_ln_EQ, m_ex_EQ)$p_one_sided #   p < 0.001 -> m_ln_EQ better fit
+
+### Figures ####
+source('plotting_functions.r')
+png('Images/hist_PNASS_top100.png')
+plotHundred(nCommon = 10, freq1_top = freq1_top)# %>% ggsave('Images/hist_PCL5_top100.png')
+dev.off()
+png('Images/stackedBar_PNASS.png')
+stackedPlot(freq1_top = freq1_top, 10, data2_counted = data2_counted, datax)
+dev.off()
+
+
+################################################
+## Calculating prevalence of specific symptom ##
+################################################
+sum(data2_counted$q1) / nrow(data2_counted) # 
+sum(datax$q1) / nrow(datax) # 
+
+# go over each item
+h <- matrix(nrow = 14, ncol = 2)
+for (i in 1:14) {
+  h[i,2] <- sum(data2_counted[,i]) / nrow(data2_counted)  
+  h[i,1] <- i
+  
+}
+gt(data.frame(h)) %>% gtsave('Analysis/PANSS/Generated Data/frequency_perProfile_PANSS.rtf')
+# do it per person
+
+l <- matrix(nrow=14, ncol=2)
+for (i in 16:29) {
+  l[i-15,2] <- sum(datax[,i]) / nrow(datax)
+  l[i-15,1] <- i-15
+}
+
+gt(data.frame(l)) %>% gtsave('Analysis/PANSS/Generated Data/frequency_perPerson_PANSS.rtf')
+
 
 ######  6. Export data for Figures ##############################################
 ### Figure 1a
