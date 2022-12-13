@@ -81,6 +81,19 @@ max(data2_counted$freq) # 950
 data2_counted <- data2_counted %>% 
   arrange(desc(freq))
 
+# symptoms reported less or equal to 5 time
+data2_counted %>% filter(freq<=5) %>% nrow() # 1077
+
+# symptom profile reported once
+ data2_counted %>% filter(freq==1) %>% nrow() # 736
+
+# individuals reporting one of the ten most common symptoms
+data2_counted[1:10,] %>% summarise(sum(freq))
+# all the rest
+data2_counted[11:nrow(data2_counted),] %>% summarise(sum(freq))
+
+
+
 print(data2_counted[1,]) # all zero
 print(data2_counted[2,]) # zero expect q12 (negative symptom)
 print(data2_counted[3,]) # zero expect q3 (positive)

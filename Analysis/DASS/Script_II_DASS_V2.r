@@ -99,6 +99,19 @@ freq1_top  <- data2_counted %>%
   top_n(freq, n = 100) %>% 
   select(freq)
 
+
+
+# symptoms reported less or equal to 5 time
+data2_counted %>% filter(freq<=5) %>% nrow() # 
+
+# symptom profile reported once
+data2_counted %>% filter(freq==1) %>% nrow() # 
+
+# individuals reporting one of the ten most common symptoms
+data2_counted[1:10,] %>% summarise(sum(freq))
+# all the rest
+data2_counted[11:nrow(data2_counted),] %>% summarise(sum(freq))
+
 # The frequency of the fifty most common symptom combinations
 pdf("Images/Top_100_Phenotypes_DASS.pdf", width=8, height=8)
 ggplot(freq1_top, aes(x=as.factor(1:nrow(freq1_top)),y=freq)) +
