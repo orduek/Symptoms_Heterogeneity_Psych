@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.3 (18.22.2022)                        #
+#                       Code Version 3.4 (31.12.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -65,6 +65,9 @@ nrow(datax)  # 52,609
 hist(datax$total)
 mean(datax$total) # 57.84
 sd(datax$total) # 12.58
+
+median(datax$total)
+quantile(datax$total)  
 
 # Summed severity of binarized items
 hist(datax$total_bin)
