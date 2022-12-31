@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 3.1 (17.02.2021)                        #
+#                       Code Version 3.2 (31.12.2022)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -47,13 +47,13 @@ library("poweRlaw")
 ###### 2. Import and prepare data ############################################
 ## Prepare
 # Load datax & data2 created in script one
-data1_binarized<- read_delim("Analysis/DASS/Generated_Data/DASS_binarized.csv", 
+data1_binarized<- read_delim("Generated_Data/DASS_binarized.csv", 
                              ";", escape_double = FALSE, trim_ws = TRUE)
 
-data2_counted<- read_delim("Analysis/DASS/Generated_Data/DASS_freq_count.csv", 
+data2_counted<- read_delim("Generated_Data/DASS_freq_count.csv", 
                            ";", escape_double = FALSE, trim_ws = TRUE)
 
-datax<- read_delim("Analysis/DASS/Generated_Data/DASS_Matched_freq_count.csv", 
+datax<- read_delim("Generated_Data/DASS_Matched_freq_count.csv", 
                    ";", escape_double = FALSE, trim_ws = TRUE)
 
 ###### 3. Descriptive #######################################################
@@ -66,9 +66,14 @@ hist(datax$total)
 mean(datax$total)
 sd(datax$total)
 
+median(datax$total)
+quantile(datax$total)    
+
 # Summed severity of binarized items
 hist(datax$total_bin)
 summary(datax$total_bin)
+
+
 
 ###### 4. Assessment of symptom phenotypes ###################################
 ######  4.1 Specific phenotypes  #############################################
