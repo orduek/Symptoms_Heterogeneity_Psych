@@ -41,8 +41,8 @@ library("scales")
 load("Analysis/PANSS/Generated Data/freq1_top_PANSS.RData") 
 
 ## PCL
-data2_counted_PCL <- read_delim("Analysis/PCL5/Generated Data/PCL_freq_count.csv", 
-                                ";", escape_double = FALSE, trim_ws = TRUE)
+data2_counted_PCL <- read_delim("Analysis/PCL5/Generated Data/freq_count.csv", ";", escape_double = FALSE, trim_ws = TRUE)
+
 load("Analysis/PCL5/Generated Data/freq1_top_PCL.RData") 
 
 ## DASS
@@ -64,6 +64,7 @@ Theme_Figure_1a <-
     axis.text.x = element_blank(),
     axis.text.y = element_text(size=9, color = "black", margin = margin(t = 0, r = 0, b = 0, l = 5)),
     axis.ticks = element_blank(),
+    plot.background = element_rect(fill = "white"),
     panel.grid.major.x = element_blank(), 
     panel.grid.major.y = element_line(size=.2, color="black" ), 
     panel.grid.minor.y = element_blank(), 
@@ -87,6 +88,7 @@ Theme_Figure_1b <-
 
 ###### 2. FIGURE 1A ##############################################################
 ### PCL
+
 data2_counted_PCL <- data2_counted_PCL %>% 
   arrange(desc(freq)) %>% 
   select(-total_bin)
@@ -107,11 +109,11 @@ data2_counted_PCL_color <- rbind(data2_counted_PCL_color_top, data2_counted_PCL_
 A1 <- ggplot(data2_counted_PCL_color, aes(x=as.factor(1:nrow(data2_counted_PCL_color)),y=freq)) +
   geom_bar(stat = "identity",fill = data2_counted_PCL_color$color) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
-  xlab("Frequency") + 
-  ylab("") +
+  xlab("") + 
+  ylab("Frequency") +
   ggtitle("PCL-5")+
   theme_minimal() + 
-  Theme_Figure_1a
+  Theme_Figure_1b
 
 ## Figure A -Distribution 
 data2_counted_PCL_distribution <- matrix(nrow = 2,ncol = 3)
@@ -124,18 +126,25 @@ data2_counted_PCL_distribution[1,2] <- "A"
 data2_counted_PCL_distribution[2,2] <- "B"
 
 data2_counted_PCL_distribution[1,3] <- "#F97134"
-  data2_counted_PCL_distribution[2,3] <- "#00A1D5FF"
+data2_counted_PCL_distribution[2,3] <- "#00A1D5FF"
     
 data2_counted_PCL_distribution_df <- as.data.frame(data2_counted_PCL_distribution)
   
-A1_distribution <- ggplot(data2_counted_PCL_distribution_df, aes(y=freq, x=title)) + 
-    geom_bar(stat="identity", fill = data2_counted_PCL_distribution_df$color) +
+A1_distribution <- 
+  ggplot(data2_counted_PCL_distribution_df, aes(y=freq, x=title)) + 
+    geom_bar(stat="identity",position="stack", fill = data2_counted_PCL_distribution_df$color) +
     xlab("") + 
     ylab(" ") +
     ggtitle("")+
-    theme_minimal() + 
+    theme_minimal() +#ylim(0,3000) +
+  
     Theme_Figure_1b
 
+# A1_distribution <- ggplot(data2_counted_PCL_color, aes(y=freq, x=color)) + geom_bar(stat = 'identity', fill=data2_counted_PCL_color$color) +
+#   xlab("") + ylab("") + theme_minimal() + Theme_Figure_1a
+
+
+  
 ## Zoom
 freq1_top_PCL <- freq1_top_PCL %>% 
   top_n(n=50)
@@ -172,13 +181,13 @@ freq1_top_PANSS <- freq1_top_PANSS %>%
     mutate(color = "#F97134")
   
   freq1_top_PANSS_color_low <- freq1_top_PANSS %>% 
-    top_n(n=-40) %>% 
+    top_n(n=-39) %>%  # fixed to 39 to make 50 total profiles
     mutate(color = "#00A1D5FF")
   
   freq1_top_PANSS_color <- rbind(freq1_top_PANSS_color_top, freq1_top_PANSS_color_low)
   
 B1 <- ggplot(freq1_top_PANSS, aes(x=as.factor(1:nrow(freq1_top_PANSS)),y=freq)) + #ADJUST!!!
-    geom_bar(stat = "identity",fill = req1_top_PANSS_color$color) +
+    geom_bar(stat = "identity",fill = freq1_top_PANSS_color$color) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     xlab(" ") + 
     ylab("") +
@@ -201,10 +210,10 @@ freq1_top_PHQ <- freq1_top_PHQ %>%
   
   freq1_top_PHQ_color <- rbind(freq1_top_PHQ_color_top, freq1_top_PHQ_color_low)
   
-  B2 <- ggplot(freq1_tofreq1_top_PHQ_colorp_PHQ, aes(x=as.factor(1:nrow(freq1_top_PHQ_color)),y=freq)) +
+  B2 <- ggplot(freq1_top_PHQ, aes(x=as.factor(1:nrow(freq1_top_PHQ_color)),y=freq)) +
     geom_bar(stat = "identity",fill = freq1_top_PHQ_color$color) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
-    xlab("Phenotypes") + 
+    xlab("") + 
     ylab("") +
     ggtitle("PHQ-9")+
     theme_minimal() + 
@@ -269,8 +278,8 @@ top_row <- ggdraw(A1) +
   
   
 # Build the bottom row
-bottom_row <- plot_grid(B4, B5, B5, B5,
-                          ncol = 4, nrow = 1)
+bottom_row <- plot_grid(B4, B2, B1,
+                          ncol = 3, nrow = 1)
   
 # Build the full plot
 pdf("Figure_1.pdf", width=10, height=7.25) 
