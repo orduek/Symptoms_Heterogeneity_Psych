@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 6.2 (08.02.2023)                        #
+#                       Code Version 6.3 (08.02.2023)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -130,7 +130,6 @@ data2_counted_PCL_distribution_df <- as.data.frame(data2_counted_PCL_distributio
   
 A1_distribution <- ggplot(data2_counted_PCL_distribution_df, aes(y=freq, x=title)) + 
     geom_bar(stat="identity", fill = data2_counted_PCL_distribution_df$color) +
-    ylim(0,52609) +
     xlab("") + 
     ylab(" ") +
     ggtitle("")+
@@ -270,8 +269,8 @@ top_row <- ggdraw(A1) +
   
   
 # Build the bottom row
-bottom_row <- plot_grid(B1, B2, B3, B4,
-                          ncol = 4, nrow = 1)
+bottom_row <- plot_grid(B1, B2, B3,
+                          ncol = 3, nrow = 1)
   
 # Build the full plot
 pdf("Figure_1.pdf", width=10, height=7.25) 
