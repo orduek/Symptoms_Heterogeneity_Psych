@@ -4,7 +4,7 @@
 #                                                                            #
 #                         Or Duek & Tobias Spiller                           # 
 #                                                                            #
-#                       Code Version 6.1 (08.02.2023)                        #
+#                       Code Version 6.2 (08.02.2023)                        #
 #                                                                            #
 #----------------------------------------------------------------------------#
 #                                                                            #
@@ -270,7 +270,7 @@ top_row <- ggdraw(A1) +
   
   
 # Build the bottom row
-bottom_row <- plot_grid(B4, B5, B5, B5,
+bottom_row <- plot_grid(B1, B2, B3, B4,
                           ncol = 4, nrow = 1)
   
 # Build the full plot
