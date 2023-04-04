@@ -41,7 +41,7 @@ library("scales")
 load("Analysis/PANSS/Generated Data/freq1_top_PANSS.RData") 
 
 ## PCL
-data2_counted_PCL <- read_delim("Analysis/PCL5/Generated Data/PCL_freq_count.csv", 
+data2_counted_PCL <- read_delim("Analysis/PCL5/Generated Data/freq_count2.csv", 
                                 ";", escape_double = FALSE, trim_ws = TRUE)
 load("Analysis/PCL5/Generated Data/freq1_top_PCL.RData") 
 
@@ -130,7 +130,7 @@ data2_counted_PCL_distribution_df <- as.data.frame(data2_counted_PCL_distributio
   
 A1_distribution <- ggplot(data2_counted_PCL_distribution_df, aes(y=freq, x=title)) + 
     geom_bar(stat="identity", fill = data2_counted_PCL_distribution_df$color) +
-    ylim(0,52609) +
+    #ylim(0,52609) +
     xlab("") + 
     ylab(" ") +
     ggtitle("")+
@@ -169,7 +169,7 @@ freq1_top_PANSS <- freq1_top_PANSS %>%
   top_n(n=50)
 
   freq1_top_PANSS_color_top <- freq1_top_PANSS %>% 
-    top_n(n=10) %>% 
+    top_n(n=9) %>% 
     mutate(color = "#F97134")
   
   freq1_top_PANSS_color_low <- freq1_top_PANSS %>% 
@@ -179,7 +179,7 @@ freq1_top_PANSS <- freq1_top_PANSS %>%
   freq1_top_PANSS_color <- rbind(freq1_top_PANSS_color_top, freq1_top_PANSS_color_low)
   
 B1 <- ggplot(freq1_top_PANSS, aes(x=as.factor(1:nrow(freq1_top_PANSS)),y=freq)) + #ADJUST!!!
-    geom_bar(stat = "identity",fill = req1_top_PANSS_color$color) +
+    geom_bar(stat = "identity",fill = freq1_top_PANSS_color$color) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     xlab(" ") + 
     ylab("") +
@@ -202,7 +202,7 @@ freq1_top_PHQ <- freq1_top_PHQ %>%
   
   freq1_top_PHQ_color <- rbind(freq1_top_PHQ_color_top, freq1_top_PHQ_color_low)
   
-  B2 <- ggplot(freq1_tofreq1_top_PHQ_colorp_PHQ, aes(x=as.factor(1:nrow(freq1_top_PHQ_color)),y=freq)) +
+  B2 <- ggplot(freq1_top_PHQ_color, aes(x=as.factor(1:nrow(freq1_top_PHQ_color)),y=freq)) +
     geom_bar(stat = "identity",fill = freq1_top_PHQ_color$color) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     xlab("Phenotypes") + 
@@ -227,7 +227,7 @@ freq1_top_PHQ <- freq1_top_PHQ %>%
   freq1_top_DASS_color <- rbind(freq1_top_DASS_color_top, freq1_top_DASS_color_low)
   
   
-B4 <- ggplot(freq1_top_DASS_color, aes(x=as.factor(1:nrow(freq1_top_DASS_color)),y=freq)) + 
+B3 <- ggplot(freq1_top_DASS_color, aes(x=as.factor(1:nrow(freq1_top_DASS_color)),y=freq)) + 
     geom_bar(stat = "identity",fill = freq1_top_DASS_color$color) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     xlab("") + 
@@ -252,7 +252,7 @@ B4 <- ggplot(freq1_top_DASS_color, aes(x=as.factor(1:nrow(freq1_top_DASS_color))
   freq1_top_MBI_color <- rbind(freq1_top_MBI_color_top, freq1_top_MBI_color_low)
   
   
-B5 <- ggplot(freq1_top_MBI_color, aes(x=as.factor(1:nrow(freq1_top_MBI_color)),y=freq)) +
+B4 <- ggplot(freq1_top_MBI_color, aes(x=as.factor(1:nrow(freq1_top_MBI_color)),y=freq)) +
     geom_bar(stat = "identity",fill = freq1_top_MBI_color$color) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     xlab(" ") + 
@@ -270,8 +270,8 @@ top_row <- ggdraw(A1) +
   
   
 # Build the bottom row
-bottom_row <- plot_grid(B4, B5, B5, B5,
-                          ncol = 4, nrow = 1)
+bottom_row <- plot_grid(B1, B2, B3,
+                          ncol = 3, nrow = 1)
   
 # Build the full plot
 pdf("Figure_1.pdf", width=10, height=7.25) 
