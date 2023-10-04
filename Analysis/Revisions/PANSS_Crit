@@ -1,6 +1,6 @@
 ---
 title: PANSS - ONLY DSM-5
-subtitle: Version 0.1.0
+subtitle: Version 0.1.1
 author:
 - <h5 style="font-style:italic"> Tobias R. Spiller
 - <h5 style="font-style:italic"> Or Duek
@@ -179,6 +179,13 @@ Cronbach's alpha
 ```{r PANSS cronbach, echo=FALSE, message=FALSE}
 cronbach <- psych::alpha(subset(data1, select = (-total)))
 cronbach$total
+
+## FULL SAMPLE
+
+data_cronbach <- data0 %>% select(pos_p1:gps_g16)
+  
+cronbach_full <- psych::alpha(data_cronbach)
+cronbach_full$total
 ```
 
 Summary of items & histogram
