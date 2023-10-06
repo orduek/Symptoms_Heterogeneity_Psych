@@ -1,6 +1,6 @@
 ---
 title: GAD
-subtitle: Version 0.1.0
+subtitle: Version 1.0.0
 author:
 - <h5 style="font-style:italic"> Tobias R. Spiller
 - <h5 style="font-style:italic"> Or Duek
@@ -11,6 +11,7 @@ output:
     toc_depth: 5
     toc_float: yes
 ---
+
 
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -29,30 +30,35 @@ library(readxl)
 library(table1)
 library(gtsummary)
 
-# Additional
-library(foreign)
-library(ReIns)
-library(psych)
-library(poweRlaw)
+# Analysis
+#library("devtools")
+#devtools::install_github("orduek/PsychPower")
+library(PsychPower)
 ```
 
 ## 1. Import and prepare data
 
-
 ```{r GAD-7 import data, message=FALSE, warning=TRUE, echo = FALSE}
 # Import data
-data_GAD_raw <- read_excel("/home/ptslab/Documents/powerLaw_newData/Ilan_PHQ9_and_GAD7_and_MH_Project_051223.xlsx", 
+# data_GAD_raw <- read_excel("/home/ptslab/Documents/powerLaw_newData/Ilan_PHQ9_and_GAD7_and_MH_Project_051223.xlsx", 
+#     sheet = "GAD & GAD7", na = "NULL")
+# 
+data_GAD_raw <- read_excel("../Raw_data/Ilan_PHQ9_and_GAD7_and_MH_Project_051223.xlsx", 
     sheet = "GAD & GAD7", na = "NULL")
 ```
 
-First, we define how the GAD-7 items map onto the DSM-5 criteria.
+First, we select only one entry per individual.
 
-```{r GAD-7 map, echo=TRUE, message=FALSE, warning=TRUE}
+```{r GAD-7 filter, echo=TRUE, message=FALSE, warning=TRUE}
 data_GAD_filtered <- data_GAD_raw %>%
   group_by(ID) %>%
   slice_head(n = 1) %>%
   ungroup()
+```
+  
+Second, we define how the GAD-7 items map onto the DSM-5 criteria.
 
+```{r GAD-7 map, echo=TRUE, message=FALSE, warning=TRUE}
 data_GAD <- data_GAD_filtered %>%
   mutate_all(~ifelse(. == 999, NA, .)) %>% 
   mutate(
@@ -68,7 +74,7 @@ data_GAD <- data_GAD_filtered %>%
   drop_na()
 ```
 
-Second, we define the diagnosis
+Third, we define the diagnosis
 
 ```{r GAD-7 Dx, echo=TRUE, message=FALSE, warning=TRUE}
 data_GAD <- data_GAD %>%
@@ -86,12 +92,10 @@ data_GAD <- data_GAD %>%
   )
 ```
 
-Third, we compare demographics of individuals that meet and do not meet criteria.
+Fourth, we compare demographics of individuals that meet and do not meet criteria.
 
 ```{r GAD-7 compare demographics, message=FALSE, warning=TRUE, echo = FALSE}    
-# Add labels
 # Set Theme
-theme_gtsummary_journal(journal = "jama")
 theme_gtsummary_compact()
 
 data_GAD$AGE <- as.numeric(data_GAD$AGE)
@@ -104,13 +108,15 @@ data_GAD %>%
   tbl_summary(
     by = GAD_Diagnosis,
     statistic = list(
-      all_continuous() ~ "{mean} ({sd})")) %>% 
+      all_continuous() ~ "{mean} ({sd})"),
+    digits = ~ 2) %>% 
   modify_header(label ~ "**Variable**") %>%
   modify_spanning_header(c("stat_1", "stat_2") ~ "Met GAD criteria, No. (%) of Patients") %>%
   bold_labels()
 ```
 <br><br>
-Fourth, we subset the population that meets the DSM-5 criteria. [not shown]
+
+Fifth, we subset the population that meets the DSM-5 criteria. [not shown]
 
 ```{r GAD-7 subset, message=FALSE, warning=TRUE, echo = FALSE}  
 # Subset
@@ -133,7 +139,8 @@ data1 <- data1 %>%
   mutate(total = rowSums(data1[1:ncol(data1)]))
 ```
 
-## 2. Sample Descriptive
+## 2. Sample descriptive
+#### 2.1 Demographics & charateristics
 ```{r GAD-7 Table 1, echo=FALSE, message=FALSE}
 # Table 1
 data_GAD_subset %>%
@@ -142,16 +149,25 @@ data_GAD_subset %>%
     AGE, GENDER, ANXIETY_DX, GAD_Diagnosis, GAD_7_Total) %>%
   tbl_summary(
     statistic = list(
-      all_continuous() ~ "{mean} ({sd})")) %>% 
+      all_continuous() ~ "{mean} ({sd})"),
+    digits = ~ 2) %>% 
   modify_header(label ~ "**Variable**") %>%
   modify_caption("Table 1. Patient Characteristics") %>%
   bold_labels()
 ``` 
 
-Cronbach's alpha
-```{r GAD-7 cronbach, echo=FALSE, message=FALSE}
+#### 2.2 Cronbach's alpha
+Selected sample
+```{r GAD-7 cronbach I, echo=FALSE, message=FALSE}
 cronbach <- psych::alpha(subset(data1, select = (-total)))
 cronbach$total
+```
+
+Full sample
+```{r GAD-7 cronbach II, echo=FALSE, message=FALSE}
+data_all_cronbach <- data_GAD %>% select(GAD_Symptom1:GAD_Symptom7) 
+cronbach_full <- psych::alpha(data_all_cronbach)
+cronbach_full$total
 ```
 
 Summary of items & histogram
@@ -181,19 +197,16 @@ data2 <- data1_binarized %>%
   select(-total) %>% 
   tibble()
 
-
 ## Count frequency of profiles
-data2_counted <- plyr::count(data2[, ]) # 510
+data2_counted <- plyr::count(data2[, ])
 
 # Create sum score of endorsed symptoms
 data2_counted <- data2_counted %>% 
   mutate(total_bin = rowSums(data2_counted)-freq)
 
-
 ## Create datax 
 # Create full dataset
 datax <- dplyr::left_join(data1_binarized, data2_counted)
-
 
 ## Create dataframes for PsychPower Package 
 data_GAD_subset_selected <- data_GAD_subset %>%  select (GAD_Symptom1:GAD_Symptom7)
@@ -203,44 +216,19 @@ data_frequency <- PsychPower::pheno_frequency(
   data_binarized, target_columns = tidyselect::starts_with("v_bin"))
 ```
 
-```{r GAD-7 Save data I, echo=FALSE, message=FALSE}
-# Save for further analysis
-write_csv2(data1, "GAD7/Generated_Data/binarized.csv")
-write_csv2(data2_counted, "GAD7/Generated_Data/Binarized_freq_count.csv")
-write_csv2(datax, "GAD7/Generated_Data/Binarized_Matched_freq_count.csv")
-```
-
 ## 4. Description of Profiles
-Severity
-```{r GAD-7 Describe Severity, echo=FALSE, message=FALSE}
-# Summed severity
-summary(datax$total)
-hist(datax$total)
-```
-
-Most common Phenotype
+Most common combination, its frequency & median frequency
 ```{r GAD-7 Describe Number, echo=FALSE, message=FALSE}
 desc_pheno <- PsychPower::describe_pheno(data_frequency, frequency = "freq") 
 desc_pheno
 ```
 
-10 Most common Phenotype
+10 Most common combinations
 ```{r GAD-7 Describe 10 most, echo=FALSE, message=FALSE}
 PsychPower::common_pheno(data_frequency, frequency = "freq", n_phenotypes = 10)
 ```
 
-
-Profiles reported less or equal to 5 time
-```{r GAD-7 Describe 5 or less, echo=FALSE, message=FALSE}
-data2_counted %>% filter(freq<=5) %>% nrow() # 
-```
-
-Profiles reported once
-```{r GAD-7 Describe once, echo=FALSE, message=FALSE}
-data2_counted %>% filter(freq==1) %>% nrow() # 
-```
-
-Profiles (N, %) reported by less or equal than in 1% of the individuals
+Combinations (N, %) reported by less or equal than in 1% of the individuals
 ```{r GAD-7 Having less then 1 percent, echo=FALSE, message=FALSE}
 one_percent_sample = round(nrow(data1)*0.01, 0)
 data2_counted %>% filter(freq<=one_percent_sample) %>% nrow()
@@ -248,92 +236,50 @@ data2_counted %>% filter(freq<=one_percent_sample) %>% nrow()
 round((data2_counted %>% filter(freq<=one_percent_sample) %>% nrow()) / nrow(data2_counted), 3)
 ```
 
-
-individuals reporting one of the ten most common profiles
+Individuals reporting one of the ten most common combinations
 ```{r GAD-7 Having 10 most, echo=FALSE, message=FALSE}
 data2_counted <- data2_counted %>% 
   arrange(desc(freq))
 data2_counted[1:10,] %>% summarise(sum(freq))
 ```
 
-individuals reporting NOT one of the ten most common profiles
+Individuals reporting NOT one of the ten most common combinations
 ```{r GAD-7  Not Having 10 most, echo=FALSE, message=FALSE}
 data2_counted[11:nrow(data2_counted),] %>% summarise(sum(freq))
 ```
 
-individuals reporting 1% Most common profiles
+Individuals reporting 1% most common combinations
 ```{r GAD-7 Describe 1 percent, echo=FALSE, message=FALSE}
 one_percent =  round(nrow(data2_counted)*0.01, 0)
 
 data2_counted[1:one_percent,] %>% summarise(sum(freq))
 ```
 
-individuals reporting one of the 50% least common profiles
+Individuals reporting one of the 50% least common combinations
 ```{r GAD-7 Describe 50 percent, echo=FALSE, message=FALSE}
 fifty_percent =  round(nrow(data2_counted)*0.5, 0)
 
 data2_counted[fifty_percent:nrow(data2_counted),] %>% summarise(sum(freq))
 ```
 
-
 Plot 100 most common profiles
 ```{r Plot 100 most common, echo=FALSE, message=FALSE}
 fig1 <- PsychPower::plot_pheno(data_frequency, frequency = "freq",
                                n_phenotypes = 100, color = "grey26")
 fig1
+```
 
-# save
-pdf("Images/Top_100_Phenotypes_GAD7.pdf", width=8, height=8)
-fig1
-dev.off() 
-
-# FOR Combined figure
-freq1_top  <- data2_counted %>% 
+## 5. Save & export data for Figures [not shown]
+```{r Save & export, message=FALSE, include=FALSE}
+### Figure 1a
+freq1_top_GAD7 <- data2_counted %>% 
   top_n(freq, n = 100) %>% 
   select(freq)
+
+save(freq1_top_GAD7, file = "../Results/freq1_top_GAD7.RData")
 ```
 
-## 5. Assess & compare distributions 
-Test
-```{r Test distributions, echo=FALSE, message=FALSE}
-freq_distribution <- PsychPower::pheno_distributions(data_frequency, frequency = "freq")
-
-set.seed(241)
-
-desc_freq <- PsychPower::describe_pheno_distr(freq_distribution, bootStrap = T,
-                                  nBoots = 5, nCores = 5)
-round(desc_freq, 3)
-```
-
-Compare distributions
-
-```{r Compare distributions, echo=FALSE, message=FALSE}
-comp_fit_freq <- PsychPower::compare_pheno_distr(freq_distribution)
-
-comp_fit_freq
-```
-
-## 6. Save & export data for Figures [not shown]
-```{r Save & export, message=FALSE, include=FALSE}
-#Export data for Figures 
-### Figure 1a
-freq1_top_GAD <- freq1_top 
-save(freq1_top_GAD , file = "GAD7/Generated_Data/freq1_top_GAD7.RData")
-
-### Figure 1b
-# Export m_pl & m_ln
-res_pl_GAD <- plot(freq_distribution[[1]])
-line_pl_GAD <- lines(freq_distribution[[1]])
-line_ln_GAD <- lines(freq_distribution[[2]])
-line_ex_GAD <- lines(freq_distribution[[3]])
-
-save(res_pl_GAD, file = "GAD7/Generated_Data/res_pl_GAD.RData")
-save(line_pl_GAD, file = "GAD7/Generated_Data/line_pl_GAD.RData")
-save(line_ln_GAD, file = "GAD7/Generated_Data/line_ln_GAD.RData")
-save(line_ex_GAD, file = "GAD7/Generated_Data/line_ex_GAD.RData")
-```
-
-## 7. Session Info
+## 6. Session Info
 ```{r Session Info, echo=FALSE, message=FALSE}
 sessionInfo()
 ```
