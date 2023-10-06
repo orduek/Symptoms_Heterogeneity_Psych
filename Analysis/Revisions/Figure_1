@@ -1,0 +1,189 @@
+---
+title: "Create Figure 1"
+author: "Or Duek & Tobias Spiller"
+date: "<h5 style=\"font-style:roman\"> `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
+subtitle: Version 1.0.0
+---
+
+# 1. Load Libraries
+
+```{r echo=FALSE, warning=FALSE}
+# Data handling + basic calculations
+library(tidyverse)
+library(mvtnorm)
+library(MASS)
+
+# Visualization
+library(patchwork)
+library(cowplot)
+library(scales)
+```
+
+# 2. Import Data
+
+```{r echo=FALSE, warning=TRUE}
+load("Results/freq_simulation.RData") 
+load("Results/freq1_top_PCL.RData")
+load("Results/freq1_top_PHQ9.RData")
+load("Results/freq1_top_Sz_DSM.RData")
+load("Results/freq1_top_GAD7.RData") 
+```
+
+# 3. Set Themes
+
+```{r}
+# Theme for Figure 1A
+Theme_Figure_1a <- 
+  theme(
+    plot.title = element_text(size=12),
+    axis.title.y = element_text(size=9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+    axis.text.x = element_blank(),
+    axis.text.y = element_text(size=9, color = "black", margin = margin(t = 0, r = 0, b = 0, l = 5)),
+    axis.ticks = element_blank(),
+    panel.grid.major.x = element_blank(), 
+    panel.grid.major.y = element_line(size=.2, color="black" ), 
+    panel.grid.minor.y = element_blank(), 
+    panel.border = element_rect(colour = "black", fill=NA, size=1),
+    panel.background = element_rect(fill = "white"))
+
+# Theme for Figure 1B-D
+Theme_Figure_1b <- 
+  theme(
+    plot.title = element_text(size=12),
+    axis.title.x = element_text(size=9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+    axis.title.y = element_text(size=9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+    axis.text.x = element_blank(),
+    axis.text.y = element_text(size=9, color = "black", margin = margin(t = 0, r = 0, b = 0, l = 5)),
+    axis.ticks = element_blank(),
+    plot.background = element_rect(fill = "white"),
+    panel.grid.major.x = element_blank(), 
+    panel.grid.major.y = element_line(size=.2, color="black" ), 
+    panel.grid.minor.y = element_blank(), 
+    panel.border = element_rect(colour = "black", fill=NA, size=1))
+```
+
+# 4. Create Figures
+
+## Figure 1A
+
+```{r}
+filtered_probs <- derived_probs
+
+A1 <- ggplot(filtered_probs, aes(x = reorder(Abbreviation, -Mean_Probability), y = Mean_Probability)) +
+  geom_bar(stat = "identity", fill = "#F97134") +
+  geom_errorbar(aes(ymin = Mean_Probability - SD_Probability, 
+                    ymax = Mean_Probability + SD_Probability), 
+                width = 0.25) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  labs(title = "Simulation", x = NULL, y = "Probability") + 
+  theme(legend.position = "none") +  
+  Theme_Figure_1a
+```
+
+## Figure 1: B1-B4
+
+```{r warning=FALSE}
+## PCL
+freq1_top_PCL %>% 
+  top_n(n=50) %>% 
+  mutate(color = "#F97134")
+
+B1 <- ggplot(freq1_top_PCL, aes(x=as.factor(1:nrow(freq1_top_PCL)),y=freq)) + 
+  geom_bar(stat = "identity",fill = freq1_top_PCL$color) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  xlab("") + 
+  ylab("Frequency") +
+  ggtitle("PCL-5")+
+  theme_minimal() + 
+  Theme_Figure_1b
+
+
+##PHQ
+freq1_top_PHQ_color_top %>% 
+  top_n(n=50) %>% 
+  mutate(color = "#F97134")
+
+B2 <- ggplot(freq1_top_PHQ_color_top, aes(x=as.factor(1:nrow(freq1_top_PHQ_color_top)),y=freq)) +
+  geom_bar(stat = "identity",fill = freq1_top_PHQ_color_top$color) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  xlab("") + 
+  ylab("") +
+  ggtitle("PHQ-9")+
+  theme_minimal() + 
+  Theme_Figure_1b
+
+
+
+##PANSS
+freq1_top_PANSS_color_top %>% 
+  top_n(n=50) %>% 
+  mutate(color = "#F97134")
+
+B3 <- ggplot(freq1_top_PANSS_color_top, aes(x=as.factor(1:nrow(freq1_top_PANSS_color_top)),y=freq)) + #ADJUST!!!
+  geom_bar(stat = "identity",fill = freq1_top_PANSS_color_top$color) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  xlab(" ") + 
+  ylab("") +
+  ggtitle("PANSS") +
+  theme_minimal() + 
+  Theme_Figure_1b
+
+
+
+##GAD-7
+freq1_top_GAD_color  %>% 
+  top_n(n=50) %>% 
+  mutate(color = "#F97134")
+
+B4 <- ggplot(freq1_top_GAD_color, aes(x=as.factor(1:nrow(freq1_top_GAD_color)),y=freq)) + 
+  geom_bar(stat = "identity",fill = freq1_top_GAD_color$color) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  xlab("") + 
+  ylab("") +
+  ggtitle("GAD-7")+
+  theme_minimal() + 
+  Theme_Figure_1b
+```
+
+## Figure 1: Combine
+
+```{r}
+# Build the top row
+top_row <- A1
+  
+# Build the bottom row
+bottom_row <- plot_grid(B1, B2, B3, B4,
+                        ncol = 4, nrow = 1)
+
+# Build the full plot
+plot <- cowplot::plot_grid(
+  top_row, bottom_row,
+  label_size = 14,
+  labels = c("A", "B"),
+  rel_widths = c(1, 1),
+  ncol = 1, nrow = 2
+)
+
+plot
+```
+
+# 5. Save Plot
+
+```{r}
+ggsave(filename = "Results/Figure_1.pdf", plot = plot, width=10, height=7.25)
+```
+
+# 6. Session Info
+
+```{r}
+sessionInfo()
+```
+```
