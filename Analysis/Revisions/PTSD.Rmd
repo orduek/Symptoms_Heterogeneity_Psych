@@ -1,6 +1,6 @@
 ---
-title: PTSD
-subtitle: Version 0.1.0
+title: PCL-5
+subtitle: Version 1.0.0
 author:
 - <h5 style="font-style:italic"> Tobias R. Spiller
 - <h5 style="font-style:italic"> Or Duek
@@ -11,6 +11,7 @@ output:
     toc_depth: 5
     toc_float: yes
 ---
+
 
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -29,11 +30,10 @@ library(readxl)
 library(table1)
 library(gtsummary)
 
-# Additional
-library(foreign)
-library(ReIns)
-library(psych)
-library(poweRlaw)
+# Analysis
+#library("devtools")
+#devtools::install_github("orduek/PsychPower")
+library(PsychPower)
 ```
 
 ## 1. Import and prepare data
@@ -77,9 +77,7 @@ data_PTSD <- dfPCL5 %>%
 Second, we compare demographics of individuals that meet and do not meet criteria.
 
 ```{r PCL compare demographics, message=FALSE, warning=TRUE, echo = FALSE}    
-# Add labels
 # Set Theme
-theme_gtsummary_journal(journal = "jama")
 theme_gtsummary_compact()
 
 # Table 1
@@ -90,12 +88,14 @@ data_PTSD %>%
   tbl_summary(
     by = PTSD_Diagnosis,
     statistic = list(
-      all_continuous() ~ "{mean} ({sd})")) %>% 
+      all_continuous() ~ "{mean} ({sd})"),
+    digits = ~ 2) %>% 
   modify_header(label ~ "**Variable**") %>%
   modify_spanning_header(c("stat_1", "stat_2") ~ "Met PTSD criteria, No. (%) of Patients") %>%
   bold_labels() 
 ```
 <br><br>
+
 Third, we subset the population that meets the DSM-5 criteria. [not shown]
 
 ```{r PCL subset, message=FALSE, warning=TRUE, echo = FALSE}  
@@ -119,22 +119,25 @@ data1 <- data1 %>%
   mutate(total = rowSums(data1[1:ncol(data1)]))
 ```
 
-## 2. Sample Descriptive
+## 2. Sample descriptive
+#### 2.1 Demographics & charateristics
 ```{r PCL Table 1, echo=FALSE, message=FALSE}
 # Table 1
 data_PTSD_subset %>%
   select(
     # Demographics
      AGE_OCT01, FEMALE, PTSD_Diagnosis, totalPCL) %>%
-  tbl_summary(
+   tbl_summary(
     statistic = list(
-      all_continuous() ~ "{mean} ({sd})")) %>% 
+      all_continuous() ~ "{mean} ({sd})"),
+    digits = ~ 2) %>% 
   modify_header(label ~ "**Variable**") %>%
   modify_caption("Table 1. Patient Characteristics") %>%
   bold_labels()
 ``` 
 
-Cronbach's alpha
+#### 2.2 Cronbach's alpha
+Selected sample
 ```{r PCL cronbach, echo=FALSE, message=FALSE}
 cronbach <- psych::alpha(subset(data1, select = (-total)))
 cronbach$total
@@ -147,7 +150,7 @@ hist(data1$total)
 ```
 
 ## 3. Binarizing & create datax 
-Symptoms rated 2 or 3 will be considered as present.[not shown]
+Symptoms rated 2 or 3 will be considered as present. [not shown]
 ```{r PCL Binarizing, echo=FALSE, message=FALSE, warning=FALSE}
 ## set cut-off
 cut_off <- 1 #will be used with <= // 
@@ -189,22 +192,9 @@ data_frequency <- PsychPower::pheno_frequency(
   data_binarized, target_columns = tidyselect::starts_with("v_bin"))
 ```
 
-```{r PCL Save data I, echo=FALSE, message=FALSE}
-# Save for further analysis
-write_csv2(data1, "PCL/Generated_data/binarized.csv")
-write_csv2(data2_counted, "PCL/Generated_data/Binarized_freq_count.csv")
-write_csv2(datax, "PCL/Generated_data/Binarized_Matched_freq_count.csv")
-```
 
-## 4. Description of Profiles
-Severity
-```{r PCL Describe Severity, echo=FALSE, message=FALSE}
-# Summed severity
-summary(datax$total)
-hist(datax$total)
-```
-
-Most common Phenotype
+## 4. Description of combinations
+Most common combination, its frequency & median frequency
 ```{r PCL Describe Number, echo=FALSE, message=FALSE}
 desc_pheno <- PsychPower::describe_pheno(data_frequency, frequency = "freq") 
 desc_pheno
@@ -213,17 +203,6 @@ desc_pheno
 10 Most common Phenotype
 ```{r PCL Describe 10 most, echo=FALSE, message=FALSE}
 PsychPower::common_pheno(data_frequency, frequency = "freq", n_phenotypes = 10)
-```
-
-
-Profiles reported less or equal to 5 time
-```{r PCL Describe 5 or less, echo=FALSE, message=FALSE}
-data2_counted %>% filter(freq<=5) %>% nrow() # 
-```
-
-Profiles reported once
-```{r PCL Describe once, echo=FALSE, message=FALSE}
-data2_counted %>% filter(freq==1) %>% nrow() # 
 ```
 
 Profiles (N, %) reported by less or equal than in 1% of the individuals
@@ -235,92 +214,52 @@ data2_counted %>% filter(freq<=one_percent_sample) %>% nrow()
 round((data2_counted %>% filter(freq<=one_percent_sample) %>% nrow()) / nrow(data2_counted), 3)
 ```
 
-individuals reporting one of the ten most common profiles
+Individuals reporting one of the ten most common combinations
 ```{r PCL Having 10 most, echo=FALSE, message=FALSE}
 data2_counted <- data2_counted %>% 
   arrange(desc(freq))
 data2_counted[1:10,] %>% summarise(sum(freq))
 ```
 
-individuals reporting NOT one of the ten most common profiles
+Individuals reporting NOT one of the ten most common combinations
 ```{r PCL  Not Having 10 most, echo=FALSE, message=FALSE}
 data2_counted[11:nrow(data2_counted),] %>% summarise(sum(freq))
 ```
 
-individuals reporting 1% Most common Profiles
+Individuals reporting 1% most common combinations
 ```{r PCL Describe 1 percent, echo=FALSE, message=FALSE}
 one_percent =  round(nrow(data2_counted)*0.01, 0)
 
 data2_counted[1:one_percent,] %>% summarise(sum(freq))
 ```
 
-individuals reporting one of the 50% least common profiles
+Individuals reporting one of the 50% least common combinations
 ```{r PCL Describe 50 percent, echo=FALSE, message=FALSE}
 fifty_percent =  round(nrow(data2_counted)*0.5, 0)
 
 data2_counted[fifty_percent:nrow(data2_counted),] %>% summarise(sum(freq))
 ```
 
-
 Plot 100 most common profiles
 ```{r Plot 100 most common, echo=FALSE, message=FALSE}
 fig1 <- PsychPower::plot_pheno(data_frequency, frequency = "freq",
                                n_phenotypes = 100, color = "grey26")
 fig1
-
-# save
-pdf("Images/Top_100_Phenotypes_PCL.pdf", width=8, height=8)
-fig1
-dev.off() 
-
-# FOR Combined figure
-freq1_top  <- data2_counted %>% 
-  top_n(freq, n = 100) %>% 
-  select(freq)
 ```
 
 
-## 5. Assess & compare distributions 
-Test
-```{r Test distributions, echo=FALSE, message=FALSE}
-#freq_distribution <- PsychPower::pheno_distributions(data_frequency, frequency = "freq")
-
-#set.seed(241)
-
-#desc_freq <- PsychPower::describe_pheno_distr(freq_distribution, bootStrap = T,
-                          #        nBoots = 5, nCores = 2)
-#round(desc_freq, 3)
-```
-
-Compare distributions
-
-```{r Compare distributions, echo=FALSE, message=FALSE}
-#comp_fit_freq <- PsychPower::compare_pheno_distr(freq_distribution)
-
-#comp_fit_freq
-```
-
-## 6. Save & export data for Figures [not shown]
+## 5. Save & export data for Figures [not shown]
 ```{r Save & export, message=FALSE, include=FALSE}
 #Export data for Figures 
 ### Figure 1a
-freq1_top_PCL <- freq1_top 
-save(freq1_top_PCL, file = "PCL/Generated_data/freq1_top_PCL.RData")
+freq1_top_PCL  <- data2_counted %>% 
+  top_n(freq, n = 100) %>% 
+  select(freq)
 
-### Figure 1b
-# Export m_pl & m_ln
-#res_pl_PCL <- plot(freq_distribution[[1]])
-#line_pl_PCL <- lines(freq_distribution[[1]])
-#line_ln_PCL <- lines(freq_distribution[[2]])
-#line_ex_PCL <- lines(freq_distribution[[3]])
-
-# save(res_pl_PCL, file = "PCL/Generated_data/res_pl_PCL.RData")
-# save(line_pl_PCL, file = "Analysis/PCL/Generated Data/line_pl_PCL.RData")
-# save(line_ln_PCL, file = "Analysis/PCL/Generated Data/line_ln_PCL.RData")
-# save(line_ex_PCL, file = "Analysis/PCL/Generated Data/line_ex_PCL.RData")
+save(freq1_top_PCL, file = "../Results/freq1_top_PCL.RData")
 ```
 
-## 7. Session Info
+## 6. Session Info
 ```{r Session Info, echo=FALSE, message=FALSE}
 sessionInfo()
 ```
