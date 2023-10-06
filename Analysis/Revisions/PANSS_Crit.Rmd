@@ -1,6 +1,6 @@
 ---
-title: PANSS - ONLY DSM-5
-subtitle: Version 0.1.0
+title: PANSS - DSM-5
+subtitle: Version 1.0.0
 author:
 - <h5 style="font-style:italic"> Tobias R. Spiller
 - <h5 style="font-style:italic"> Or Duek
@@ -29,11 +29,10 @@ library(readxl)
 library(table1)
 library(gtsummary)
 
-# Additional
-library(foreign)
-library(ReIns)
-library(psych)
-library(poweRlaw)
+# Analysis
+#library("devtools")
+#devtools::install_github("orduek/PsychPower")
+library(PsychPower)
 ```
 
 ## 1. Import and prepare data
@@ -41,7 +40,6 @@ library(poweRlaw)
 ```{r PANSS import data, message=FALSE, warning=TRUE, echo = FALSE}
 # Import data
 df <- read.csv('/home/ptslab/Documents/powerLaw_newData/pnass01.csv')
-
 
 df$Age <- as.numeric(df$interview_age) / 10 # change age variable accordingly
 
@@ -111,9 +109,7 @@ data_SZ_II <- data_SZ_II %>%
 Third, we compare demographics of individuals that meet and do not meet criteria.
 
 ```{r PANSS compare demographics, message=FALSE, warning=TRUE, echo = FALSE}    
-# Add labels
 # Set Theme
-theme_gtsummary_journal(journal = "jama")
 theme_gtsummary_compact()
 
 # Table 1
@@ -124,13 +120,14 @@ data_SZ_II %>%
     PANSS_total_sum, PANSS_positive_sum, PANSS_negative_sum, PANSS_global_sum) %>%
   tbl_summary(
     by = PANSS_SZ_II_DX,
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})")) %>% 
+    statistic = list(all_continuous() ~ "{mean} ({sd})"),
+    digits = ~ 2) %>% 
   modify_header(label ~ "**Variable**") %>%
   modify_spanning_header(c("stat_1", "stat_2") ~ "Met SZ_II criteria, No. (%) of Patients") %>%
   bold_labels()
 ```
 <br><br>
+
 Fourth, we subset the population that meets the DSM-5 criteria. [not shown]
 
 ```{r PANSS subset, message=FALSE, warning=TRUE, echo = FALSE}  
@@ -141,13 +138,10 @@ data_SZ_II_subset <- data_SZ_II %>%
 
 ```{r PANSS further analysis, message=FALSE, warning=TRUE, echo = FALSE}
 # Prepare dataset for further analysis // DATA1
-
-
 data1 <- data_SZ_II_subset %>%  select (criterion_1:criterion_5)
 
 data1 <- as.data.frame(lapply(data1, as.numeric))
   
-
 ## Extract variable names
 variable_names <- c(names(data1), "total")
 
@@ -160,6 +154,7 @@ data1 <- data1 %>%
 ```
 
 ## 2. Sample Descriptive
+#### 2.1 Demographics & charateristics
 ```{r PANSS Table 1, echo=FALSE, message=FALSE}
 # Table 1
 data_SZ_II_subset %>%
@@ -168,17 +163,25 @@ data_SZ_II_subset %>%
     age, sex, PANSS_SZ_II_DX,  
     PANSS_total_sum, PANSS_positive_sum, PANSS_negative_sum, PANSS_global_sum) %>%
   tbl_summary(
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})")) %>% 
+     statistic = list(
+      all_continuous() ~ "{mean} ({sd})"),
+    digits = ~ 2) %>% 
   modify_header(label ~ "**Variable**") %>%
   modify_caption("Table 1. Patient Characteristics") %>%
   bold_labels()
 ``` 
 
-Cronbach's alpha
-```{r PANSS cronbach, echo=FALSE, message=FALSE}
+#### 2.2 Cronbach's alpha
+Selected sample
+```{r PANSS cronbach I, echo=FALSE, message=FALSE}
 cronbach <- psych::alpha(subset(data1, select = (-total)))
 cronbach$total
+```
+Full sample
+```{r PANSS cronbach II, echo=FALSE, message=FALSE}
+data_cronbach <- data0 %>% select(pos_p1:gps_g16)
+cronbach_full <- psych::alpha(data_cronbach)
+cronbach_full$total
 ```
 
 Summary of items & histogram
@@ -231,43 +234,20 @@ data_frequency <- PsychPower::pheno_frequency(
   data_binarized, target_columns = tidyselect::starts_with("v_bin"))
 ```
 
-```{r PANSS Save data I, echo=FALSE, message=FALSE}
-# Save for further analysis
-write_csv2(data1, "SZ_II/Generated_Data/binarized.csv")
-write_csv2(data2_counted, "SZ_II/Generated_Data/Binarized_freq_count.csv")
-write_csv2(datax, "SZ_II/Generated_Data/Binarized_Matched_freq_count.csv")
-```
 
-## 4. Description of Profiles
-Severity
-```{r PANSS Describe Severity, echo=FALSE, message=FALSE}
-# Summed severity
-summary(datax$total)
-hist(datax$total)
-```
-
-Most common Phenotype
+## 4. Description of combinations
+Most common combination, its frequency & median frequency
 ```{r PANSS Describe Number, echo=FALSE, message=FALSE}
 desc_pheno <- PsychPower::describe_pheno(data_frequency, frequency = "freq") 
 desc_pheno
 ```
 
-10 Most common Phenotype
+10 Most common combinations
 ```{r PANSS Describe 10 most, echo=FALSE, message=FALSE}
 PsychPower::common_pheno(data_frequency, frequency = "freq", n_phenotypes = 10)
 ```
 
-
-Profiles reported less or equal to 5 time
-```{r PANSS Describe 5 or less, echo=FALSE, message=FALSE}
-data2_counted %>% filter(freq<=5) %>% nrow() # 
-```
-
-Profiles reported once
-```{r PANSS Describe once, echo=FALSE, message=FALSE}
-data2_counted %>% filter(freq==1) %>% nrow() # 
-```
-Profiles (N, %) reported by less or equal than in 1% of the individuals
+Combinations (N, %) reported by less or equal than in 1% of the individuals
 ```{r PANSS Having less then 1 percent, echo=FALSE, message=FALSE}
 one_percent_sample = round(nrow(data1)*0.01, 0)
 data2_counted %>% filter(freq<=one_percent_sample) %>% nrow()
@@ -275,89 +255,47 @@ data2_counted %>% filter(freq<=one_percent_sample) %>% nrow()
 round((data2_counted %>% filter(freq<=one_percent_sample) %>% nrow()) / nrow(data2_counted), 3)
 ```
 
-
-individuals reporting one of the ten most common profiles
+Individuals reporting one of the ten most common combinations
 ```{r PANSS Having 10 most, echo=FALSE, message=FALSE}
 data2_counted <- data2_counted %>% 
   arrange(desc(freq))
 data2_counted[1:10,] %>% summarise(sum(freq))
 ```
 
-individuals reporting NOT one of the ten most common profiles
+Individuals reporting NOT one of the ten most common combinations
 ```{r PANSS  Not Having 10 most, echo=FALSE, message=FALSE}
 data2_counted[11:nrow(data2_counted),] %>% summarise(sum(freq))
 ```
 
-individuals reporting 1% Most common Profiles
+Individuals reporting 1% most common combinations
 ```{r PANSS Describe 1 percent, echo=FALSE, message=FALSE}
 one_percent =  round(nrow(data2_counted)*0.01, 0)
 
 data2_counted[1:one_percent,] %>% summarise(sum(freq))
 ```
 
-individuals reporting one of the 50% least common profiles
+Individuals reporting one of the 50% least common combinations
 ```{r PANSS Describe 50 percent, echo=FALSE, message=FALSE}
 fifty_percent =  round(nrow(data2_counted)*0.5, 0)
 
 data2_counted[fifty_percent:nrow(data2_counted),] %>% summarise(sum(freq))
 ```
 
-
-Plot 100 most common profiles
+Plot 100 most common combination
 ```{r Plot 100 most common, echo=FALSE, message=FALSE}
 fig1 <- PsychPower::plot_pheno(data_frequency, frequency = "freq",
                                n_phenotypes = 100, color = "grey26")
 fig1
-
-# save
-pdf("Images/Top_100_Phenotypes_SZ_II.pdf", width=8, height=8)
-fig1
-dev.off() 
-
-# FOR Combined figure
-freq1_top  <- data2_counted %>% 
-  top_n(freq, n = 100) %>% 
-  select(freq)
-```
-
-## 5. Assess & compare distributions 
-Test
-```{r Test distributions, echo=FALSE, message=FALSE}
-freq_distribution <- PsychPower::pheno_distributions(data_frequency, frequency = "freq")
-
-set.seed(241)
-
-desc_freq <- PsychPower::describe_pheno_distr(freq_distribution, bootStrap = T,
-                                  nBoots = 5, nCores = 5)
-round(desc_freq, 3)
-```
-
-Compare distributions
-
-```{r Compare distributions, echo=FALSE, message=FALSE}
-comp_fit_freq <- PsychPower::compare_pheno_distr(freq_distribution)
-
-comp_fit_freq
 ```
 
 ## 6. Save & export data for Figures [not shown]
 ```{r Save & export, message=FALSE, include=FALSE}
-#Export data for Figures 
 ### Figure 1a
-freq1_top_SZ_II <- freq1_top 
-save(freq1_top_SZ_II , file = "SZ_II/Generated_Data/freq1_top_SZ_II.RData")
-
-### Figure 1b
-# Export m_pl & m_ln
-res_pl_SZ_II <- plot(freq_distribution[[1]])
-line_pl_SZ_II <- lines(freq_distribution[[1]])
-line_ln_SZ_II <- lines(freq_distribution[[2]])
-line_ex_SZ_II <- lines(freq_distribution[[3]])
-
-save(res_pl_SZ_II, file = "SZ_II/Generated_Data/res_pl_SZ_II.RData")
-save(line_pl_SZ_II, file = "SZ_II/Generated_Data/line_pl_SZ_II.RData")
-save(line_ln_SZ_II, file = "SZ_II/Generated_Data/line_ln_SZ_II.RData")
-save(line_ex_SZ_II, file = "SZ_II/Generated_Data/line_ex_SZ_II.RData")
+freq1_top_Sz_DSM <- data2_counted %>% 
+  top_n(freq, n = 100) %>% 
+  select(freq)
+  
+save(freq1_top_Sz_DSM, file = "../Results/freq1_top_Sz_DSM.RData")
 ```
 
 ## 7. Session Info
