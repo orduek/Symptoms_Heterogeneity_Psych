@@ -58,6 +58,8 @@ dfPCL5$totalPCL <- dfPCL5$PCLN01 + dfPCL5$PCLN02 + dfPCL5$PCLN03 + dfPCL5$PCLN04
   dfPCL5$PCLN12 + dfPCL5$PCLN13 + dfPCL5$PCLN14 + dfPCL5$PCLN15 + dfPCL5$PCLN16 + dfPCL5$PCLN17 +
   dfPCL5$PCLN18 + dfPCL5$PCLN19 + dfPCL5$PCLN20
 ## Datax
+nrow(dfPCL5 %>% filter(totalPCL < 28))
+413/52609
 
 ### Clean dataset
 
@@ -90,6 +92,27 @@ colnames(data1) <- c(paste0("Q", 1:(ncol(data1))))
 total = rowSums(data1)
 data1 <- cbind(data1, total)
 
+
+#### Correlation Matrix #######
+dataCor <- data1[1:nrow(data1),1:20]
+correlations <- rcorr(as.matrix(dataCor))
+
+# Create a mask for significant correlations
+cor_mat <- correlations$r  # Correlation matrix
+p_mat <- correlations$P  # P-value matrix
+sig_level <- 0.05  # Significance level
+mask <- p_mat <= sig_level  # Matrix to mask non-significant correlations
+
+# Plot using corrplot
+corrplot::corrplot(cor_mat, type = "upper", order = "hclust", 
+                   p.mat = p_mat, sig.level = sig_level, 
+                   insig = "blank", addCoef.col = "black", # Show correlation coefficient
+                   tl.col="black", tl.srt=45) # Text label color and rotation
+
+
+
+
+#########
 
 ###### 3. Descriptive #######################################################
 ###### 3.1 For Material & Methods 
