@@ -1,0 +1,178 @@
+---
+title: "Supplement 2 - Simulation"
+author: "Or Duek & Tobias Spiller"
+date: "<h5 style=\"font-style:roman\"> `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+---
+
+## Introduction
+
+This analysis simulates a binary latent construct "L" and its related indicators "S1", "S2", "W1", "W2", and "M". The probability of meeting different combinations of criteria is computed and visualized. 
+
+```{r setup, include=FALSE}
+# Load required packages
+library(tidyverse)
+library(mvtnorm)
+library(MASS)
+library(flextable)
+library(officer)
+```
+
+## Simulation Set-up
+
+```{r simulation_setup, echo=TRUE}
+# Setting seed for reproducibility
+set.seed(123)
+
+# Number of individuals and simulations
+n <- 1000
+n_sims <- 100
+
+# Function to ensure the values fall between 0 and 4
+rescale <- function(x) {
+  min_val <- min(x)
+  max_val <- max(x)
+  return((x - min_val) / (max_val - min_val) * 4)
+}
+
+# Matrix to accumulate the results of each simulation
+results_accumulator <- matrix(0, ncol = 2^5, nrow = n_sims)
+
+# Combinations of binary criteria
+combinations <- expand.grid(c(0,1), c(0,1), c(0,1), c(0,1), c(0,1))
+```
+
+## Running Simulations
+
+```{r simulations, echo=TRUE}
+for(sim in 1:n_sims) {
+  # Simulating the binary latent construct "L"
+  L <- rbinom(n, 1, 0.5)
+  
+  # Simulate the strongly related indicators "S1" and "S2"
+  S1 <- rescale(2 * L + rnorm(n, mean=2, sd=0.5))
+  S2 <- rescale(1.8 * L + rnorm(n, mean=2, sd=0.5))
+  
+  # Simulate the medium related indicator "M"
+  M <- rescale(1.2 * L + rnorm(n, mean=2, sd=0.8))  # Setting relation to be 1.2
+  
+  # Simulate the weakly related indicators "W1" and "W2"
+  W1 <- rescale(0.6 * L + rnorm(n, mean=2, sd=1))
+  W2 <- rescale(0.4 * L + rnorm(n, mean=2, sd=1))
+  
+  
+  # Combine into a data frame
+  data <- data.frame(L, S1, S2, W1, W2, M)
+  
+  # Creating binary variables for all indicators
+  data <- data %>%
+    mutate(
+      S1_positive = S1 >= 2,
+      S2_positive = S2 >= 2,
+      W1_positive = W1 >= 2,
+      W2_positive = W2 >= 2,
+      M_positive = M >= 2
+    )
+  
+  # Calculate a new column that counts how many criteria are met for each individual
+  data <- data %>%
+    mutate(criteria_met = S1_positive + S2_positive + W1_positive + W2_positive + M_positive)
+  
+  # Filter the dataset to keep only those individuals that meet at least 2 criteria
+  filtered_data <- data %>%
+    filter(criteria_met >= 2)
+  
+  # Estimate covariance matrix
+  cov_matrix <- cov(filtered_data[, c("S1", "S2", "W1", "W2", "M")])
+  means_simulated <- colMeans(filtered_data[, c("S1", "S2", "W1", "W2", "M")])
+  
+  for(i in 1:nrow(combinations)){
+    lower <- as.numeric(ifelse(combinations[i,] == 1, 2, -Inf))
+    upper <- as.numeric(ifelse(combinations[i,] == 1, Inf, 2))
+    results_accumulator[sim, i] <- pmvnorm(lower = lower, upper = upper, mean = means_simulated, sigma = cov_matrix)
+  }
+}
+
+# Compute the mean and SD for each combination
+derived_probs <- data.frame(Combination = paste(combinations[,1], combinations[,2], combinations[,3], combinations[,4], combinations[,5], sep=""),
+                            Mean_Probability = apply(results_accumulator, 2, mean),
+                            SD_Probability = apply(results_accumulator, 2, sd))
+
+
+# Determine which combinations meet 2 out of 5 criteria
+derived_probs$MeetsCriteria <- ifelse(rowSums(combinations) >= 2, TRUE, FALSE)
+
+# Sort by Mean_Probability
+derived_probs <- derived_probs %>%
+  arrange(desc(Mean_Probability))
+
+# Add abbreviations to the results dataframe for cleaner x-axis labels
+derived_probs$Abbreviation <- as.character(1:nrow(derived_probs))
+
+# Filter derived_probs to only include combinations that meet the criteria
+filtered_probs <- derived_probs %>% 
+  filter(MeetsCriteria)
+```
+
+## Results
+
+The table below showcases the mean probabilities and standard deviations for various criteria combinations:
+
+```{r show_table, echo=TRUE}
+print(derived_probs)
+```
+
+## Export Results
+
+The results are also saved to a CSV file and a Word document for further reference.
+
+```{r export_results, echo=TRUE}
+#Save as csv
+write.csv2(derived_probs, "../Results/results_simulation.csv", row.names = FALSE)
+
+#Save
+save(derived_probs , file = "../Results/freq_simulation.RData")
+
+# Convert the dataframe to a flextable object and export to Word
+my_table <- flextable(derived_probs)
+doc <- read_docx() %>% 
+  body_add_flextable(value = my_table)
+print(doc, target = "../Results/results_simulation.docx")
+```
+
+## Visualization
+
+We visualize the filtered combinations based on their probability of meeting the criteria.
+
+```{r plot, echo=TRUE}
+# Define the theme for the figure
+Theme_Figure_1a <- 
+  theme(
+    plot.title = element_text(size=12),
+    axis.title.y = element_text(size=9, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+    axis.text.x = element_blank(),
+    axis.text.y = element_text(size=9, color = "black", margin = margin(t = 0, r = 0, b = 0, l = 5)),
+    axis.ticks = element_blank(),
+    panel.grid.major.x = element_blank(), 
+    panel.grid.major.y = element_line(size=.2, color="black" ), 
+    panel.grid.minor.y = element_blank(), 
+    panel.border = element_rect(colour = "black", fill=NA, size=1),
+    panel.background = element_rect(fill = "white"))
+
+
+# Plot 
+A1 <- ggplot(filtered_probs, aes(x = reorder(Abbreviation, -Mean_Probability), y = Mean_Probability)) +
+  geom_bar(stat = "identity", fill = "#F97134") +
+  geom_errorbar(aes(ymin = Mean_Probability - SD_Probability, 
+                    ymax = Mean_Probability + SD_Probability), 
+                width = 0.25) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  labs(title = "Simulation", x = NULL, y = "Probability") + 
+  theme(legend.position = "none") +  
+  Theme_Figure_1a
+A1
+```
