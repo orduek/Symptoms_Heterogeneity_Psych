@@ -153,18 +153,6 @@ correlations <- rcorr(as.matrix(dataCor))
 # Create a vector with the correct order of column names
 correct_order <- paste0("Q", 1:20)
 
-# Order the data frame columns according to the correct order
-data0_ordered <- dataCor[, correct_order]
-
-library(Hmisc)
-correlations <- rcorr(as.matrix(data0_ordered))
-cor_mat <- correlations$r  # Extract correlation matrix
-
-library(corrplot)
-corrplot(cor_mat, order = "original", type = "upper", 
-         method = "color", addCoef.col = "black", 
-         tl.col = "black", tl.srt = 45)
-
 # Create a mask for significant correlations
 cor_mat <- correlations$r  # Correlation matrix
 p_mat <- correlations$P  # P-value matrix
