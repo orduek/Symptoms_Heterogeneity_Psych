@@ -181,6 +181,26 @@ Summary of items & histogram
 summary(data1)
 hist(data1$total)
 ```
+## 2.1 Correlation matrix
+```{r}
+dataCor <- data1[,1:14]
+correlations <- rcorr(as.matrix(dataCor))
+
+# Create a mask for significant correlations
+cor_mat <- correlations$r  # Correlation matrix
+p_mat <- correlations$P  # P-value matrix
+sig_level <- 0.05  # Significance level
+mask <- p_mat <= sig_level  # Matrix to mask non-significant correlations
+
+# Plot using corrplot
+corrplot::corrplot(cor_mat, type = "upper", order = "hclust", 
+                   p.mat = p_mat, sig.level = sig_level, 
+                   insig = "blank", addCoef.col = "black", # Show correlation coefficient
+                   tl.col="black", tl.srt=45) # Text label color and rotation
+
+
+```
+
 
 ## 3. Binarizing & create datax 
 Symptoms rated 3-7 will be considered as present.[not shown]

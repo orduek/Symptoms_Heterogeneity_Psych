@@ -34,6 +34,11 @@ library(foreign)
 library(ReIns)
 library(psych)
 library(poweRlaw)
+
+
+
+library(Hmisc)
+library(corrplot)
 ```
 
 ## 1. Import and prepare data
@@ -41,7 +46,7 @@ library(poweRlaw)
 
 ```{r GAD-7 import data, message=FALSE, warning=TRUE, echo = FALSE}
 # Import data
-data_GAD_raw <- read_excel("/home/ptslab/Documents/powerLaw_newData/Ilan_PHQ9_and_GAD7_and_MH_Project_051223.xlsx", 
+data_GAD_raw <- read_excel("/home/ptslab/Documents/powerLaw_newData//Ilan_PHQ9_and_GAD7_and_MH_Project_051223.xlsx",
     sheet = "GAD & GAD7", na = "NULL")
 ```
 
@@ -159,6 +164,25 @@ Summary of items & histogram
 summary(data1)
 hist(data1$total)
 ```
+## 2.1 Correlation matrix
+```{r}
+correlations <- rcorr(as.matrix(data1[,1:7]))
+
+# Create a mask for significant correlations
+cor_mat <- correlations$r  # Correlation matrix
+p_mat <- correlations$P  # P-value matrix
+sig_level <- 0.05  # Significance level
+mask <- p_mat <= sig_level  # Matrix to mask non-significant correlations
+
+# Plot using corrplot
+corrplot::corrplot(cor_mat, type = "upper", order = "hclust", 
+                   p.mat = p_mat, sig.level = sig_level, 
+                   insig = "blank", addCoef.col = "black", # Show correlation coefficient
+                   tl.col="black", tl.srt=45) # Text label color and rotation
+
+
+```
+
 
 ## 3. Binarizing & create datax 
 Symptoms rated 2 or 3 will be considered as present.[not shown]
